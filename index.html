@@ -17,7 +17,7 @@
 body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
-                 "Noto Sans KR", sans-serif;
+        "Noto Sans KR", sans-serif;
     background: #f5f7fa;
     color: #222;
 }
@@ -92,10 +92,6 @@ button {
     background: #78c83f;
     color: white;
     font-weight: 700;
-}
-
-.loginBtn:active {
-    transform: scale(.98);
 }
 
 .loginError {
@@ -190,7 +186,8 @@ button {
     flex: 1;
 }
 
-.friend {
+.friend,
+.groupRoom {
     display: flex;
     align-items: center;
     gap: 12px;
@@ -198,11 +195,13 @@ button {
     cursor: pointer;
 }
 
-.friend:hover {
+.friend:hover,
+.groupRoom:hover {
     background: #f5f7f5;
 }
 
-.friend.active {
+.friend.active,
+.groupRoom.active {
     background: #eaf8df;
 }
 
@@ -224,20 +223,40 @@ button {
     text-overflow: ellipsis;
 }
 
-.onlineDot {
+.onlineDot,
+.offlineDot {
     width: 10px;
     height: 10px;
-    background: #4caf50;
     border-radius: 50%;
     border: 2px solid white;
 }
 
+.onlineDot {
+    background: #4caf50;
+}
+
 .offlineDot {
-    width: 10px;
-    height: 10px;
     background: #bbb;
-    border-radius: 50%;
-    border: 2px solid white;
+}
+
+.sectionHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 17px 18px 8px;
+    color: #888;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.addGroupBtn {
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: #78c83f;
+    color: white;
+    font-size: 20px;
+    line-height: 30px;
 }
 
 .logoutBtn {
@@ -272,7 +291,7 @@ button {
 .mobileBack {
     display: none;
     background: transparent;
-    font-size: 25px;
+    font-size: 28px;
 }
 
 .chatUserName {
@@ -429,15 +448,124 @@ button {
 }
 
 /* =========================
-   FILE
+   MODAL
 ========================= */
 
-#fileInput {
+.modalOverlay {
     display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.42);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+.modal {
+    width: 100%;
+    max-width: 430px;
+    background: white;
+    border-radius: 22px;
+    padding: 24px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.modalTitle {
+    font-size: 22px;
+    font-weight: 800;
+    margin-bottom: 18px;
+}
+
+.modalInput {
+    width: 100%;
+    height: 48px;
+    border: 1px solid #ddd;
+    border-radius: 13px;
+    padding: 0 14px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.selectTitle {
+    font-size: 14px;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.memberList {
+    border: 1px solid #eee;
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.memberItem {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.memberItem:last-child {
+    border-bottom: 0;
+}
+
+.memberItem input {
+    width: 20px;
+    height: 20px;
+}
+
+.memberAvatar {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    background: #e4f6d4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.memberName {
+    flex: 1;
+    font-weight: 600;
+}
+
+.modalButtons {
+    display: flex;
+    gap: 8px;
+    margin-top: 18px;
+}
+
+.modalCancel,
+.modalCreate {
+    flex: 1;
+    height: 48px;
+    border-radius: 13px;
+    font-weight: 700;
+}
+
+.modalCancel {
+    background: #eee;
+    color: #555;
+}
+
+.modalCreate {
+    background: #78c83f;
+    color: white;
+}
+
+.modalError {
+    color: #e53935;
+    font-size: 13px;
+    min-height: 18px;
+    margin-top: 8px;
 }
 
 /* =========================
-   RESPONSIVE
+   MOBILE
 ========================= */
 
 @media (max-width: 700px) {
@@ -472,9 +600,9 @@ button {
 
 <body>
 
-<!-- =========================
+<!-- ==================================================
      LOGIN
-========================= -->
+================================================== -->
 
 <section id="loginScreen">
 
@@ -513,9 +641,9 @@ button {
 </section>
 
 
-<!-- =========================
+<!-- ==================================================
      APP
-========================= -->
+================================================== -->
 
 <section id="app">
 
@@ -526,7 +654,9 @@ button {
         <aside class="sidebar">
 
             <div class="sideTop">
-                <div class="sideTitle">친구</div>
+                <div class="sideTitle">
+                    친구
+                </div>
             </div>
 
             <div class="profileMini">
@@ -547,13 +677,42 @@ button {
 
             </div>
 
-            <div class="friendTitle">
-                친구 목록
+
+            <!-- FRIENDS -->
+
+            <div class="sectionHeader">
+                <span>친구 목록</span>
+
+                <button
+                    class="addGroupBtn"
+                    onclick="openGroupModal()"
+                    title="단톡방 만들기"
+                >
+                    +
+                </button>
             </div>
 
-            <div id="friendList" class="friendList"></div>
+            <div
+                id="friendList"
+                class="friendList"
+            ></div>
 
-            <button class="logoutBtn" onclick="logout()">
+            <!-- GROUPS -->
+
+            <div class="sectionHeader">
+                <span>단체 채팅</span>
+            </div>
+
+            <div
+                id="groupList"
+                class="friendList"
+                style="flex:none;max-height:220px;"
+            ></div>
+
+            <button
+                class="logoutBtn"
+                onclick="logout()"
+            >
                 로그아웃
             </button>
 
@@ -573,17 +732,26 @@ button {
                     ‹
                 </button>
 
-                <div id="chatAvatar" class="avatar">
+                <div
+                    id="chatAvatar"
+                    class="avatar"
+                >
                     💬
                 </div>
 
                 <div>
 
-                    <div id="chatUserName" class="chatUserName">
+                    <div
+                        id="chatUserName"
+                        class="chatUserName"
+                    >
                         친구를 선택하세요
                     </div>
 
-                    <div id="chatUserStatus" class="chatUserStatus">
+                    <div
+                        id="chatUserStatus"
+                        class="chatUserStatus"
+                    >
                     </div>
 
                 </div>
@@ -591,10 +759,13 @@ button {
             </header>
 
 
-            <div id="messages" class="messages">
+            <div
+                id="messages"
+                class="messages"
+            >
 
                 <div class="emptyChat">
-                    왼쪽에서 친구를 선택하세요.
+                    친구 또는 단톡방을 선택하세요.
                 </div>
 
             </div>
@@ -632,6 +803,7 @@ button {
                 <input
                     id="fileInput"
                     type="file"
+                    style="display:none"
                     onchange="fileSelected(event)"
                 >
 
@@ -662,6 +834,66 @@ button {
 </section>
 
 
+<!-- ==================================================
+     GROUP MODAL
+================================================== -->
+
+<div
+    id="groupModal"
+    class="modalOverlay"
+>
+
+    <div class="modal">
+
+        <div class="modalTitle">
+            👥 단톡방 만들기
+        </div>
+
+        <input
+            id="groupNameInput"
+            class="modalInput"
+            type="text"
+            maxlength="40"
+            placeholder="단톡방 이름"
+        >
+
+        <div class="selectTitle">
+            친구 선택
+        </div>
+
+        <div
+            id="groupMemberList"
+            class="memberList"
+        ></div>
+
+        <div
+            id="groupModalError"
+            class="modalError"
+        ></div>
+
+        <div class="modalButtons">
+
+            <button
+                class="modalCancel"
+                onclick="closeGroupModal()"
+            >
+                취소
+            </button>
+
+            <button
+                class="modalCreate"
+                onclick="createGroupRoom()"
+            >
+                단톡방 만들기
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
 <script>
 
 /* ==================================================
@@ -671,9 +903,6 @@ button {
 const SUPABASE_URL =
     "https://qtprsnwbeqwuzqpnlxot.supabase.co";
 
-/*
-   ↓↓↓ 기존에 사용하던 anon key를 여기에 넣어줘.
-*/
 const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cHJzbndiZXF3dXpxcG5seG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNTIwNjksImV4cCI6MjEwMzkyODA2OX0.O39oJfWYgvI2O40EcI4cgw3yM1HNrvz0n--CXiKMThM";
 
@@ -692,6 +921,7 @@ let currentUser = null;
 let currentFriend = null;
 let currentRoom = null;
 let realtimeChannel = null;
+let sidebarChannel = null;
 
 
 /* ==================================================
@@ -719,6 +949,9 @@ const loginError =
 const friendList =
     document.getElementById("friendList");
 
+const groupList =
+    document.getElementById("groupList");
+
 const messagesBox =
     document.getElementById("messages");
 
@@ -743,6 +976,18 @@ const myAvatar =
 const chatAvatar =
     document.getElementById("chatAvatar");
 
+const groupModal =
+    document.getElementById("groupModal");
+
+const groupNameInput =
+    document.getElementById("groupNameInput");
+
+const groupMemberList =
+    document.getElementById("groupMemberList");
+
+const groupModalError =
+    document.getElementById("groupModalError");
+
 
 /* ==================================================
    EMOJI
@@ -754,8 +999,8 @@ const emojis = [
     "🥰","😘","😎","🤩","🥳","😋","😜",
     "🤔","🤗","😮","😭","😢","😡","😱",
     "👍","👎","👏","🙏","❤️","💚","💙",
-    "💜","🔥","✨","🎉","🎂","🤣","ㅋㅋ",
-    "🙌","💯","😴","🤪","😇","🥹"
+    "💜","🔥","✨","🎉","🎂","🙌","💯",
+    "😴","🤪","😇","🥹"
 ];
 
 function makeEmojiPanel() {
@@ -777,11 +1022,9 @@ function makeEmojiPanel() {
             messageInput.value += emoji;
 
             messageInput.focus();
-
         };
 
         grid.appendChild(button);
-
     });
 }
 
@@ -857,17 +1100,32 @@ async function login() {
         currentUser
     );
 
+    await startApp();
+}
+
+
+/* ==================================================
+   START APP
+================================================== */
+
+async function startApp() {
+
     await setOnline();
 
     loginScreen.style.display = "none";
     app.style.display = "block";
 
-    myName.textContent = currentUser;
+    myName.textContent =
+        currentUser;
 
     myAvatar.textContent =
         currentUser.charAt(0);
 
     await loadFriends();
+
+    await loadGroups();
+
+    subscribeSidebar();
 
 }
 
@@ -904,17 +1162,7 @@ async function checkAutoLogin() {
 
     currentUser = data.username;
 
-    await setOnline();
-
-    loginScreen.style.display = "none";
-    app.style.display = "block";
-
-    myName.textContent = currentUser;
-
-    myAvatar.textContent =
-        currentUser.charAt(0);
-
-    await loadFriends();
+    await startApp();
 }
 
 checkAutoLogin();
@@ -950,7 +1198,6 @@ async function setOffline() {
         })
         .eq("username", currentUser);
 }
-
 
 window.addEventListener(
     "beforeunload",
@@ -1013,13 +1260,17 @@ async function loadFriends() {
             <div class="friendInfo">
 
                 <div class="friendName">
-                    ${escapeHtml(friend.display_name)}
+                    ${escapeHtml(
+                        friend.display_name
+                    )}
                 </div>
 
                 <div class="friendLast">
-                    ${friend.status === "online"
+                    ${
+                        friend.status === "online"
                         ? "온라인"
-                        : "오프라인"}
+                        : "오프라인"
+                    }
                 </div>
 
             </div>
@@ -1032,19 +1283,133 @@ async function loadFriends() {
         `;
 
         item.onclick = () =>
-            openChat(friend);
+            openPrivateChat(friend);
 
         friendList.appendChild(item);
-
     });
 }
 
 
 /* ==================================================
-   FIND ROOM
+   GROUP LIST
 ================================================== */
 
-async function getRoom(user1, user2) {
+async function loadGroups() {
+
+    if (!currentUser) return;
+
+    const {
+        data: members,
+        error
+    } = await supabaseClient
+        .from("chat_members")
+        .select("room_id")
+        .eq("username", currentUser);
+
+    if (error) {
+
+        console.error(
+            "단톡 목록 오류:",
+            error
+        );
+
+        return;
+    }
+
+    groupList.innerHTML = "";
+
+    if (!members || members.length === 0) {
+
+        groupList.innerHTML = `
+            <div style="padding:10px 18px;color:#aaa;font-size:13px;">
+                단톡방이 없습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+    const roomIds =
+        members.map(x => x.room_id);
+
+    const {
+        data: rooms,
+        error: roomError
+    } = await supabaseClient
+        .from("chat_rooms")
+        .select("*")
+        .in("id", roomIds)
+        .eq("is_group", true)
+        .order("created_at", {
+            ascending: false
+        });
+
+    if (roomError) {
+
+        console.error(roomError);
+
+        return;
+    }
+
+    if (!rooms || rooms.length === 0) {
+
+        groupList.innerHTML = `
+            <div style="padding:10px 18px;color:#aaa;font-size:13px;">
+                단톡방이 없습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+    for (const room of rooms) {
+
+        const item =
+            document.createElement("div");
+
+        item.className =
+            "groupRoom";
+
+        item.dataset.roomId =
+            room.id;
+
+        item.innerHTML = `
+
+            <div class="avatar">
+                👥
+            </div>
+
+            <div class="friendInfo">
+
+                <div class="friendName">
+                    ${escapeHtml(
+                        room.name || "단톡방"
+                    )}
+                </div>
+
+                <div class="friendLast">
+                    단체 채팅
+                </div>
+
+            </div>
+        `;
+
+        item.onclick = () =>
+            openGroupChat(room);
+
+        groupList.appendChild(item);
+    }
+}
+
+
+/* ==================================================
+   PRIVATE ROOM
+================================================== */
+
+async function getPrivateRoom(
+    user1,
+    user2
+) {
 
     const keys = [
         `${user1}_${user2}`,
@@ -1065,7 +1430,7 @@ async function getRoom(user1, user2) {
     if (error) {
 
         console.error(
-            "채팅방 찾기 오류:",
+            "1:1 채팅방 오류:",
             error
         );
 
@@ -1077,24 +1442,43 @@ async function getRoom(user1, user2) {
 
 
 /* ==================================================
-   OPEN CHAT
+   PRIVATE CHAT
 ================================================== */
 
-async function openChat(friend) {
+async function openPrivateChat(friend) {
 
     currentFriend = friend;
 
+    currentRoom =
+        await getPrivateRoom(
+            currentUser,
+            friend.username
+        );
+
+    if (!currentRoom) {
+
+        alert(
+            "1:1 채팅방을 찾을 수 없습니다."
+        );
+
+        return;
+    }
+
     document
-        .querySelectorAll(".friend")
-        .forEach(el => {
+        .querySelectorAll(
+            ".friend, .groupRoom"
+        )
+        .forEach(el =>
+            el.classList.remove("active")
+        );
 
-            el.classList.toggle(
-                "active",
-                el.dataset.username ===
-                friend.username
-            );
+    const selected =
+        document.querySelector(
+            `.friend[data-username="${CSS.escape(friend.username)}"]`
+        );
 
-        });
+    if (selected)
+        selected.classList.add("active");
 
     chatUserName.textContent =
         friend.display_name;
@@ -1107,22 +1491,53 @@ async function openChat(friend) {
         ? "온라인"
         : "오프라인";
 
-    currentRoom =
-        await getRoom(
-            currentUser,
-            friend.username
+    messageInput.disabled = false;
+    sendBtn.disabled = false;
+
+    appLayout.classList.add("chatOpen");
+
+    await loadMessages();
+
+    subscribeMessages();
+
+    messageInput.focus();
+}
+
+
+/* ==================================================
+   GROUP CHAT
+================================================== */
+
+async function openGroupChat(room) {
+
+    currentFriend = null;
+
+    currentRoom = room;
+
+    document
+        .querySelectorAll(
+            ".friend, .groupRoom"
+        )
+        .forEach(el =>
+            el.classList.remove("active")
         );
 
-    if (!currentRoom) {
+    const selected =
+        document.querySelector(
+            `.groupRoom[data-room-id="${room.id}"]`
+        );
 
-        messagesBox.innerHTML = `
-            <div class="emptyChat">
-                채팅방을 찾을 수 없습니다.
-            </div>
-        `;
+    if (selected)
+        selected.classList.add("active");
 
-        return;
-    }
+    chatUserName.textContent =
+        room.name || "단톡방";
+
+    chatAvatar.textContent =
+        "👥";
+
+    chatUserStatus.textContent =
+        "단체 채팅";
 
     messageInput.disabled = false;
     sendBtn.disabled = false;
@@ -1186,14 +1601,9 @@ async function loadMessages() {
         return;
     }
 
-    data.forEach(message => {
-
-        renderMessage(message);
-
-    });
+    data.forEach(renderMessage);
 
     scrollMessages();
-
 }
 
 
@@ -1236,7 +1646,9 @@ function renderMessage(message) {
         </div>
 
         <div class="bubble">
-            ${escapeHtml(message.message)}
+            ${escapeHtml(
+                message.message
+            )}
         </div>
 
         <div class="messageMeta">
@@ -1247,19 +1659,17 @@ function renderMessage(message) {
     row.appendChild(bubbleWrap);
 
     messagesBox.appendChild(row);
-
 }
 
 
 /* ==================================================
-   SEND
+   SEND MESSAGE
 ================================================== */
 
 async function sendMessage() {
 
-    if (!currentUser) return;
-
-    if (!currentRoom) return;
+    if (!currentUser || !currentRoom)
+        return;
 
     const text =
         messageInput.value.trim();
@@ -1302,23 +1712,7 @@ async function sendMessage() {
 
 
 /* ==================================================
-   ENTER
-================================================== */
-
-function handleEnter(event) {
-
-    if (event.key === "Enter") {
-
-        event.preventDefault();
-
-        sendMessage();
-
-    }
-}
-
-
-/* ==================================================
-   REALTIME
+   REALTIME MESSAGE
 ================================================== */
 
 function subscribeMessages() {
@@ -1331,7 +1725,6 @@ function subscribeMessages() {
             .removeChannel(
                 realtimeChannel
             );
-
     }
 
     realtimeChannel =
@@ -1359,10 +1752,282 @@ function subscribeMessages() {
                     );
 
                     scrollMessages();
-
                 }
             )
             .subscribe();
+}
+
+
+/* ==================================================
+   SIDEBAR REALTIME
+================================================== */
+
+function subscribeSidebar() {
+
+    if (sidebarChannel) {
+
+        supabaseClient
+            .removeChannel(
+                sidebarChannel
+            );
+    }
+
+    sidebarChannel =
+        supabaseClient
+            .channel(
+                "sidebar-" +
+                Date.now()
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "chat_rooms"
+                },
+                async () => {
+
+                    await loadGroups();
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "chat_members"
+                },
+                async () => {
+
+                    await loadGroups();
+                }
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "*",
+                    schema: "public",
+                    table: "profiles"
+                },
+                async () => {
+
+                    await loadFriends();
+                }
+            )
+            .subscribe();
+}
+
+
+/* ==================================================
+   GROUP MODAL
+================================================== */
+
+async function openGroupModal() {
+
+    groupNameInput.value = "";
+
+    groupModalError.textContent = "";
+
+    groupMemberList.innerHTML = "";
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .neq("username", currentUser)
+        .order("display_name");
+
+    if (error) {
+
+        console.error(error);
+
+        groupModalError.textContent =
+            "친구 목록을 불러오지 못했습니다.";
+
+        return;
+    }
+
+    if (!data || data.length === 0) {
+
+        groupModalError.textContent =
+            "선택할 친구가 없습니다.";
+
+        return;
+    }
+
+    data.forEach(friend => {
+
+        const item =
+            document.createElement("label");
+
+        item.className =
+            "memberItem";
+
+        item.innerHTML = `
+
+            <input
+                type="checkbox"
+                value="${escapeHtml(
+                    friend.username
+                )}"
+            >
+
+            <div class="memberAvatar">
+                ${escapeHtml(
+                    friend.display_name.charAt(0)
+                )}
+            </div>
+
+            <div class="memberName">
+                ${escapeHtml(
+                    friend.display_name
+                )}
+            </div>
+        `;
+
+        groupMemberList.appendChild(item);
+    });
+
+    groupModal.style.display = "flex";
+
+    setTimeout(() => {
+        groupNameInput.focus();
+    }, 50);
+}
+
+
+function closeGroupModal() {
+
+    groupModal.style.display = "none";
+    groupModalError.textContent = "";
+}
+
+
+/* ==================================================
+   CREATE GROUP
+================================================== */
+
+async function createGroupRoom() {
+
+    const name =
+        groupNameInput.value.trim();
+
+    groupModalError.textContent = "";
+
+    if (!name) {
+
+        groupModalError.textContent =
+            "단톡방 이름을 입력하세요.";
+
+        return;
+    }
+
+    const checked =
+        groupMemberList.querySelectorAll(
+            'input[type="checkbox"]:checked'
+        );
+
+    if (checked.length === 0) {
+
+        groupModalError.textContent =
+            "친구를 한 명 이상 선택하세요.";
+
+        return;
+    }
+
+    const usernames =
+        Array.from(checked)
+            .map(input => input.value);
+
+    /*
+       room_key는 매번 고유하게 생성
+    */
+
+    const roomKey =
+        "group_" +
+        Date.now() +
+        "_" +
+        Math.random()
+            .toString(36)
+            .slice(2, 8);
+
+    /* 방 생성 */
+
+    const {
+        data: room,
+        error: roomError
+    } = await supabaseClient
+        .from("chat_rooms")
+        .insert({
+            name: name,
+            is_group: true,
+            room_key: roomKey
+        })
+        .select()
+        .single();
+
+    if (roomError) {
+
+        console.error(roomError);
+
+        groupModalError.textContent =
+            "단톡방 생성 실패: " +
+            roomError.message;
+
+        return;
+    }
+
+    /*
+       만든 사람 + 선택한 친구
+    */
+
+    const members = [
+        currentUser,
+        ...usernames
+    ];
+
+    const uniqueMembers =
+        [...new Set(members)];
+
+    const memberRows =
+        uniqueMembers.map(username => ({
+            room_id: room.id,
+            username: username
+        }));
+
+    const {
+        error: memberError
+    } = await supabaseClient
+        .from("chat_members")
+        .insert(memberRows);
+
+    if (memberError) {
+
+        console.error(memberError);
+
+        /*
+           멤버 등록 실패 시 방 삭제
+        */
+
+        await supabaseClient
+            .from("chat_rooms")
+            .delete()
+            .eq("id", room.id);
+
+        groupModalError.textContent =
+            "참가자 등록 실패: " +
+            memberError.message;
+
+        return;
+    }
+
+    closeGroupModal();
+
+    await loadGroups();
+
+    await openGroupChat(room);
 }
 
 
@@ -1384,6 +2049,11 @@ function closeChat() {
     messageInput.disabled = true;
     sendBtn.disabled = true;
 
+    chatUserName.textContent =
+        "친구를 선택하세요";
+
+    chatUserStatus.textContent = "";
+
     if (realtimeChannel) {
 
         supabaseClient
@@ -1393,7 +2063,6 @@ function closeChat() {
 
         realtimeChannel = null;
     }
-
 }
 
 
@@ -1411,7 +2080,7 @@ function fileSelected(event) {
     alert(
         "파일 선택 완료: " +
         file.name +
-        "\n\n파일 업로드 기능은 Supabase Storage 연결 후 활성화됩니다."
+        "\n\n실제 파일 업로드는 Supabase Storage 연결 후 사용할 수 있습니다."
     );
 
     event.target.value = "";
@@ -1433,6 +2102,17 @@ async function logout() {
                 realtimeChannel
             );
 
+        realtimeChannel = null;
+    }
+
+    if (sidebarChannel) {
+
+        await supabaseClient
+            .removeChannel(
+                sidebarChannel
+            );
+
+        sidebarChannel = null;
     }
 
     localStorage.removeItem(
@@ -1460,7 +2140,7 @@ async function logout() {
 
 
 /* ==================================================
-   UTILS
+   UTIL
 ================================================== */
 
 function scrollMessages() {
@@ -1495,7 +2175,42 @@ function escapeHtml(value) {
         .replaceAll("'", "&#039;");
 }
 
+
+/* ==================================================
+   MODAL BACKDROP
+================================================== */
+
+groupModal.addEventListener(
+    "click",
+    event => {
+
+        if (event.target === groupModal) {
+            closeGroupModal();
+        }
+
+    }
+);
+
+
+/* ==================================================
+   ESC
+================================================== */
+
+document.addEventListener(
+    "keydown",
+    event => {
+
+        if (
+            event.key === "Escape" &&
+            groupModal.style.display === "flex"
+        ) {
+            closeGroupModal();
+        }
+
+    }
+);
+
 </script>
 
 </body>
-</html>
+                    </html>
