@@ -2,13 +2,10 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0,
-      maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<title>친구채팅</title>
+<title>FriendsChat</title>
 
-<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
@@ -19,319 +16,296 @@
 
 body {
     margin: 0;
-    font-family: Arial, "Noto Sans KR", sans-serif;
-    background: #e8e8e8;
+    font-family: Arial, sans-serif;
+    background: #f5f7fa;
     color: #222;
 }
 
-.app {
-    width: 100%;
-    max-width: 600px;
-    height: 100vh;
-    margin: auto;
-    background: #b2dff7;
-    display: flex;
-    flex-direction: column;
-}
+/* 로그인 */
 
-/* 상단 */
-.header {
-    height: 58px;
-    background: white;
+#loginScreen {
+    min-height: 100vh;
     display: flex;
     align-items: center;
-    padding: 0 16px;
-    border-bottom: 1px solid #ddd;
+    justify-content: center;
+    padding: 25px;
+    background: linear-gradient(135deg, #eaffd0, #ffffff);
+}
+
+.login-box {
+    width: 100%;
+    max-width: 380px;
+    background: white;
+    border-radius: 24px;
+    padding: 35px 25px;
+    box-shadow: 0 10px 35px rgba(0,0,0,0.1);
+}
+
+.logo {
+    text-align: center;
+    font-size: 32px;
+    font-weight: 800;
+    color: #72b82a;
+    margin-bottom: 8px;
+}
+
+.login-subtitle {
+    text-align: center;
+    color: #777;
+    margin-bottom: 30px;
+}
+
+.login-box input {
+    width: 100%;
+    height: 52px;
+    border: 1px solid #ddd;
+    border-radius: 13px;
+    padding: 0 15px;
+    font-size: 16px;
+    margin-bottom: 12px;
+    outline: none;
+}
+
+.login-box input:focus {
+    border-color: #8fd14f;
+}
+
+.login-btn {
+    width: 100%;
+    height: 52px;
+    border: none;
+    border-radius: 13px;
+    background: #8fd14f;
+    color: white;
+    font-size: 17px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.login-btn:active {
+    transform: scale(0.98);
+}
+
+.login-error {
+    color: #e74c3c;
+    text-align: center;
+    min-height: 22px;
+    margin: 10px 0;
+}
+
+/* 채팅 */
+
+#chatScreen {
+    display: none;
+    height: 100vh;
+    height: 100dvh;
+    flex-direction: column;
+    background: #f7f8fa;
+}
+
+.header {
+    height: 64px;
     flex-shrink: 0;
+    background: white;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 16px;
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
 }
 
 .header-title {
     font-size: 20px;
     font-weight: bold;
-    flex: 1;
 }
 
-.header button {
-    border: none;
-    background: #f1f1f1;
+.online-dot {
+    width: 9px;
+    height: 9px;
+    background: #6ed34a;
     border-radius: 50%;
-    width: 38px;
-    height: 38px;
-    font-size: 18px;
+}
+
+.header-user {
+    font-size: 14px;
+    color: #777;
+}
+
+.logout-btn {
+    border: none;
+    background: #f1f3f5;
+    border-radius: 10px;
+    padding: 8px 11px;
     cursor: pointer;
 }
 
-/* 채팅 */
-.chat {
+.messages {
     flex: 1;
     overflow-y: auto;
-    padding: 18px 12px 12px;
+    padding: 18px 14px;
 }
 
-.date {
-    text-align: center;
-    margin: 5px 0 18px;
-}
-
-.date span {
-    display: inline-block;
-    background: rgba(255,255,255,0.75);
-    padding: 6px 13px;
-    border-radius: 20px;
-    font-size: 12px;
-    color: #555;
-}
-
-/* 메시지 */
-.message {
+.message-row {
     display: flex;
-    margin-bottom: 10px;
+    flex-direction: column;
+    margin-bottom: 13px;
+}
+
+.message-row.mine {
     align-items: flex-end;
 }
 
-.message.me {
-    justify-content: flex-end;
+.message-row.other {
+    align-items: flex-start;
 }
 
-.profile {
-    width: 36px;
-    height: 36px;
-    background: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 8px;
-    font-size: 18px;
-    flex-shrink: 0;
-}
-
-.message-content {
-    max-width: 75%;
-}
-
-.name {
+.nickname {
     font-size: 12px;
-    margin-bottom: 4px;
-    color: #555;
+    color: #777;
+    margin: 0 7px 4px;
+}
+
+.message-line {
+    display: flex;
+    align-items: flex-end;
+    gap: 5px;
+    max-width: 85%;
+}
+
+.mine .message-line {
+    flex-direction: row-reverse;
 }
 
 .bubble {
-    display: inline-block;
-    padding: 9px 12px;
-    border-radius: 13px;
+    padding: 10px 13px;
+    border-radius: 17px;
     background: white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+    word-break: break-word;
     font-size: 15px;
     line-height: 1.4;
-    word-break: break-word;
 }
 
-.me .bubble {
-    background: #ffe94a;
-    border-radius: 13px 13px 3px 13px;
+.mine .bubble {
+    background: #dff7b8;
 }
 
-.message:not(.me) .bubble {
-    border-radius: 13px 13px 13px 3px;
-}
-
-.time {
+.message-info {
     font-size: 10px;
-    color: #666;
-    margin: 0 5px;
+    color: #999;
     white-space: nowrap;
 }
 
-/* 입력 */
 .input-area {
-    min-height: 62px;
-    background: white;
-    border-top: 1px solid #ddd;
-    display: flex;
-    align-items: center;
-    padding: 8px;
-    gap: 7px;
     flex-shrink: 0;
-}
-
-.plus {
-    width: 40px;
-    height: 40px;
-    border: none;
-    background: #f2f2f2;
-    border-radius: 10px;
-    font-size: 23px;
-}
-
-.input {
-    flex: 1;
-    height: 42px;
-    border: 1px solid #ddd;
-    border-radius: 21px;
-    padding: 0 15px;
-    outline: none;
-    font-size: 15px;
-}
-
-.input:focus {
-    border-color: #aaa;
-}
-
-.send {
-    width: 44px;
-    height: 44px;
-    border: none;
-    border-radius: 50%;
-    background: #ffe94a;
-    font-size: 19px;
-    cursor: pointer;
-}
-
-.send:active {
-    transform: scale(0.92);
-}
-
-/* 닉네임 창 */
-.modal-bg {
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.45);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.modal {
-    width: 100%;
-    max-width: 360px;
     background: white;
-    border-radius: 20px;
-    padding: 24px;
-}
-
-.modal h2 {
-    margin: 0 0 8px;
-}
-
-.modal p {
-    color: #777;
-    font-size: 14px;
-}
-
-.modal input {
-    width: 100%;
-    height: 45px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    padding: 0 12px;
-    font-size: 15px;
-    outline: none;
-}
-
-.modal-actions {
+    border-top: 1px solid #eee;
+    padding: 10px;
     display: flex;
     gap: 8px;
-    margin-top: 15px;
+    padding-bottom: calc(10px + env(safe-area-inset-bottom));
 }
 
-.modal-actions button {
+.message-input {
     flex: 1;
-    height: 43px;
+    height: 45px;
+    border: 1px solid #ddd;
+    border-radius: 23px;
+    padding: 0 16px;
+    font-size: 15px;
+    outline: none;
+}
+
+.send-btn {
+    width: 45px;
+    height: 45px;
     border: none;
-    border-radius: 10px;
+    border-radius: 50%;
+    background: #8fd14f;
+    color: white;
+    font-size: 20px;
     font-weight: bold;
 }
 
-.cancel {
-    background: #eee;
-}
-
-.save {
-    background: #ffe94a;
-}
-
-.status {
-    font-size: 11px;
-    color: #777;
-    margin-left: 8px;
-}
-
-@media (min-width: 601px) {
-    .app {
-        box-shadow: 0 0 25px rgba(0,0,0,0.12);
-    }
+.empty {
+    text-align: center;
+    color: #aaa;
+    margin-top: 40px;
 }
 </style>
 </head>
 
 <body>
 
-<div class="app">
+<!-- 로그인 화면 -->
+<div id="loginScreen">
+    <div class="login-box">
+
+        <div class="logo">FriendsChat</div>
+        <div class="login-subtitle">친구들과 함께하는 채팅</div>
+
+        <input
+            id="username"
+            type="text"
+            placeholder="아이디"
+            autocomplete="off"
+        >
+
+        <input
+            id="password"
+            type="password"
+            placeholder="비밀번호"
+            autocomplete="off"
+        >
+
+        <div id="loginError" class="login-error"></div>
+
+        <button class="login-btn" onclick="login()">
+            로그인
+        </button>
+
+    </div>
+</div>
+
+
+<!-- 채팅 화면 -->
+<div id="chatScreen">
 
     <div class="header">
-        <div class="header-title">
-            💬 친구채팅
-            <span class="status" id="status">연결 중...</span>
+
+        <div class="header-left">
+            <div class="online-dot"></div>
+            <div class="header-title">FriendsChat</div>
         </div>
 
-        <button onclick="openNickname()">⚙️</button>
+        <div class="header-user">
+            <span id="currentUser"></span>
+            <button class="logout-btn" onclick="logout()">로그아웃</button>
+        </div>
+
     </div>
 
-    <div class="chat" id="chat">
-
-        <div class="date">
-            <span>친구채팅</span>
-        </div>
-
+    <div id="messages" class="messages">
+        <div class="empty">메시지를 불러오는 중...</div>
     </div>
 
     <div class="input-area">
 
-        <button class="plus" onclick="plusMessage()">＋</button>
-
         <input
             id="messageInput"
-            class="input"
+            class="message-input"
             type="text"
             placeholder="메시지를 입력하세요"
             autocomplete="off"
         >
 
-        <button class="send" onclick="sendMessage()">➤</button>
-
-    </div>
-
-</div>
-
-
-<!-- 닉네임 -->
-<div class="modal-bg" id="nicknameModal">
-
-    <div class="modal">
-
-        <h2>내 닉네임</h2>
-
-        <p>친구들에게 표시될 이름을 입력하세요.</p>
-
-        <input
-            id="nicknameInput"
-            type="text"
-            maxlength="20"
-            placeholder="닉네임"
-        >
-
-        <div class="modal-actions">
-
-            <button class="cancel" onclick="closeNickname()">
-                취소
-            </button>
-
-            <button class="save" onclick="saveNickname()">
-                저장
-            </button>
-
-        </div>
+        <button class="send-btn" onclick="sendMessage()">➤</button>
 
     </div>
 
@@ -339,354 +313,300 @@ body {
 
 
 <script>
-
-/* ==========================================
-   SUPABASE 설정
-========================================== */
-
 const SUPABASE_URL =
     "https://qtprsnwbeqwuzqpnlxot.supabase.co";
 
 const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cHJzbndiZXF3dXpxcG5seG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNTIwNjksImV4cCI6MjEwMzkyODA2OX0.O39oJfWYgvI2O40EcI4cgw3yM1HNrvz0n--CXiKMThM";
-
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cHJzbndiZXE3dXpxcG5seG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MjIwNjksImV4cCI6MjEwMzkyODA2OX0.O39oJfWYgvI2O40EcI4cgw3yM1HNrvz0n--CXiKMThM";
 
 const supabaseClient =
-    window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_ANON_KEY
-    );
+    supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+let currentUser = localStorage.getItem("friendschat_user");
 
 
-/* ==========================================
-   기본 설정
-========================================== */
+/* 로그인 상태 확인 */
 
-let nickname =
-    localStorage.getItem("nickname") || "나";
-
-const chat =
-    document.getElementById("chat");
-
-const input =
-    document.getElementById("messageInput");
-
-const status =
-    document.getElementById("status");
-
-
-/* ==========================================
-   시간
-========================================== */
-
-function formatTime(dateString) {
-
-    const date = new Date(dateString);
-
-    return date.toLocaleTimeString("ko-KR", {
-        hour: "numeric",
-        minute: "2-digit"
-    });
-
+if (currentUser) {
+    showChat();
 }
 
 
-/* ==========================================
-   메시지 화면에 표시
-========================================== */
+/* 로그인 */
 
-function addMessage(data) {
+async function login() {
 
-    const message =
-        document.createElement("div");
+    const username =
+        document.getElementById("username").value.trim();
 
-    const isMe =
-        data.nickname === nickname;
+    const password =
+        document.getElementById("password").value;
 
-    message.className =
-        "message" + (isMe ? " me" : "");
+    const error =
+        document.getElementById("loginError");
 
+    error.textContent = "";
 
-    if (isMe) {
-
-        message.innerHTML = `
-            <div class="time">
-                ${formatTime(data.created_at)}
-            </div>
-
-            <span class="bubble"></span>
-        `;
-
-        message.querySelector(".bubble")
-            .textContent = data.message;
-
-    } else {
-
-        message.innerHTML = `
-            <div class="profile">👤</div>
-
-            <div class="message-content">
-
-                <div class="name">
-                    ${escapeHTML(data.nickname)}
-                </div>
-
-                <span class="bubble"></span>
-
-            </div>
-
-            <div class="time">
-                ${formatTime(data.created_at)}
-            </div>
-        `;
-
-        message.querySelector(".bubble")
-            .textContent = data.message;
-
+    if (!username || !password) {
+        error.textContent = "아이디와 비밀번호를 입력하세요.";
+        return;
     }
 
-    chat.appendChild(message);
+    const { data, error: dbError } =
+        await supabaseClient
+            .from("chat_users")
+            .select("username")
+            .eq("username", username)
+            .eq("password", password)
+            .maybeSingle();
 
-    chat.scrollTop =
-        chat.scrollHeight;
+    if (dbError) {
+        console.error(dbError);
+        error.textContent = "로그인 오류가 발생했습니다.";
+        return;
+    }
+
+    if (!data) {
+        error.textContent = "아이디 또는 비밀번호가 틀렸습니다.";
+        return;
+    }
+
+    currentUser = data.username;
+
+    localStorage.setItem(
+        "friendschat_user",
+        currentUser
+    );
+
+    showChat();
 }
 
 
-/* ==========================================
-   HTML 안전 처리
-========================================== */
+/* 채팅 화면 */
 
-function escapeHTML(text) {
+function showChat() {
 
-    const div =
-        document.createElement("div");
+    document.getElementById("loginScreen").style.display = "none";
 
-    div.textContent = text;
+    document.getElementById("chatScreen").style.display = "flex";
 
-    return div.innerHTML;
+    document.getElementById("currentUser").textContent =
+        currentUser;
+
+    loadMessages();
+
+    subscribeMessages();
+
+    document.getElementById("messageInput").focus();
 }
 
 
-/* ==========================================
-   기존 메시지 불러오기
-========================================== */
+/* 로그아웃 */
+
+function logout() {
+
+    localStorage.removeItem("friendschat_user");
+
+    currentUser = null;
+
+    location.reload();
+}
+
+
+/* 메시지 불러오기 */
 
 async function loadMessages() {
+
+    const box =
+        document.getElementById("messages");
 
     const { data, error } =
         await supabaseClient
             .from("messages")
             .select("*")
-            .order("created_at", {
-                ascending: true
-            });
+            .order("id", { ascending: true });
 
     if (error) {
-
         console.error(error);
+        box.innerHTML =
+            '<div class="empty">메시지를 불러오지 못했습니다.</div>';
+        return;
+    }
 
-        status.textContent =
-            "연결 오류";
+    box.innerHTML = "";
+
+    if (!data || data.length === 0) {
+
+        box.innerHTML =
+            '<div class="empty">아직 메시지가 없습니다.</div>';
 
         return;
     }
 
-    status.textContent =
-        "● 온라인";
-
     data.forEach(addMessage);
 
+    scrollToBottom();
 }
 
 
-/* ==========================================
-   메시지 보내기
-========================================== */
+/* 메시지 표시 */
+
+function addMessage(message) {
+
+    const box =
+        document.getElementById("messages");
+
+    const row =
+        document.createElement("div");
+
+    const mine =
+        message.nickname === currentUser;
+
+    row.className =
+        "message-row " +
+        (mine ? "mine" : "other");
+
+    const nickname =
+        document.createElement("div");
+
+    nickname.className = "nickname";
+
+    nickname.textContent =
+        mine ? "" : message.nickname;
+
+    const line =
+        document.createElement("div");
+
+    line.className = "message-line";
+
+    const bubble =
+        document.createElement("div");
+
+    bubble.className = "bubble";
+
+    bubble.textContent =
+        message.message;
+
+    const info =
+        document.createElement("div");
+
+    info.className = "message-info";
+
+    const time =
+        message.created_at
+            ? new Date(message.created_at)
+                .toLocaleTimeString("ko-KR", {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                })
+            : "";
+
+    info.textContent = time;
+
+    line.appendChild(bubble);
+    line.appendChild(info);
+
+    row.appendChild(nickname);
+    row.appendChild(line);
+
+    box.appendChild(row);
+}
+
+
+/* 메시지 전송 */
 
 async function sendMessage() {
+
+    const input =
+        document.getElementById("messageInput");
 
     const text =
         input.value.trim();
 
     if (!text) return;
 
-
     input.disabled = true;
-
 
     const { error } =
         await supabaseClient
             .from("messages")
             .insert({
-                nickname: nickname,
+                nickname: currentUser,
                 message: text
             });
 
-
-    if (error) {
-
-        console.error(error);
-
-        alert(
-            "메시지를 보내지 못했습니다.\n\n" +
-            error.message
-        );
-
-    } else {
-
-        input.value = "";
-
-    }
-
-
     input.disabled = false;
 
-    input.focus();
+    if (error) {
+        console.error(error);
+        alert("메시지 전송에 실패했습니다.");
+        return;
+    }
 
+    input.value = "";
+    input.focus();
 }
 
 
-/* ==========================================
-   실시간 메시지
-========================================== */
+/* 엔터 전송 */
 
-supabaseClient
-    .channel("messages-realtime")
-    .on(
-        "postgres_changes",
-        {
-            event: "INSERT",
-            schema: "public",
-            table: "messages"
-        },
-        function(payload) {
+document
+    .getElementById("messageInput")
+    .addEventListener("keydown", function(e) {
 
-            addMessage(payload.new);
-
-        }
-    )
-    .subscribe(function(state) {
-
-        console.log(
-            "Realtime 상태:",
-            state
-        );
-
-        if (state === "SUBSCRIBED") {
-
-            status.textContent =
-                "● 온라인";
-
+        if (e.key === "Enter") {
+            e.preventDefault();
+            sendMessage();
         }
 
     });
 
 
-/* ==========================================
-   엔터키
-========================================== */
+/* 실시간 메시지 */
 
-input.addEventListener(
-    "keydown",
-    function(e) {
+function subscribeMessages() {
 
-        if (e.key === "Enter") {
+    supabaseClient
+        .channel("friendschat-messages")
+        .on(
+            "postgres_changes",
+            {
+                event: "INSERT",
+                schema: "public",
+                table: "messages"
+            },
+            payload => {
 
-            sendMessage();
+                const box =
+                    document.getElementById("messages");
 
-        }
+                const empty =
+                    box.querySelector(".empty");
 
-    }
-);
+                if (empty) {
+                    box.innerHTML = "";
+                }
 
+                addMessage(payload.new);
 
-/* ==========================================
-   닉네임
-========================================== */
-
-function openNickname() {
-
-    document
-        .getElementById("nicknameModal")
-        .style.display = "flex";
-
-    document
-        .getElementById("nicknameInput")
-        .value = nickname;
-
-    setTimeout(function() {
-
-        document
-            .getElementById("nicknameInput")
-            .focus();
-
-    }, 100);
-
+                scrollToBottom();
+            }
+        )
+        .subscribe();
 }
 
 
-function closeNickname() {
+/* 아래로 이동 */
 
-    document
-        .getElementById("nicknameModal")
-        .style.display = "none";
+function scrollToBottom() {
 
+    const box =
+        document.getElementById("messages");
+
+    setTimeout(() => {
+        box.scrollTop = box.scrollHeight;
+    }, 50);
 }
-
-
-function saveNickname() {
-
-    const value =
-        document
-            .getElementById("nicknameInput")
-            .value
-            .trim();
-
-    if (!value) {
-
-        alert("닉네임을 입력하세요.");
-
-        return;
-
-    }
-
-    nickname = value;
-
-    localStorage.setItem(
-        "nickname",
-        nickname
-    );
-
-    closeNickname();
-
-    alert(
-        "닉네임이 '" +
-        nickname +
-        "'으로 변경됐어요!"
-    );
-
-}
-
-
-/* ==========================================
-   + 버튼
-========================================== */
-
-function plusMessage() {
-
-    alert(
-        "사진 / 파일 기능은 다음 단계에서 추가하자!"
-    );
-
-}
-
-
-/* ==========================================
-   시작
-========================================== */
-
-loadMessages();
-
 </script>
 
 </body>
