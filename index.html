@@ -16,12 +16,25 @@
 
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI",
+                 "Noto Sans KR", sans-serif;
     background: #f5f7fa;
     color: #222;
 }
 
-/* 로그인 */
+button,
+input {
+    font: inherit;
+}
+
+button {
+    border: 0;
+    cursor: pointer;
+}
+
+/* =========================
+   LOGIN
+========================= */
 
 #loginScreen {
     min-height: 100vh;
@@ -29,345 +42,811 @@ body {
     align-items: center;
     justify-content: center;
     padding: 25px;
-    background: linear-gradient(135deg, #eaffd0, #ffffff);
+    background: linear-gradient(135deg, #dff8c8, #f5fff0);
 }
 
-.login-box {
+.loginBox {
     width: 100%;
-    max-width: 380px;
+    max-width: 390px;
     background: white;
     border-radius: 24px;
-    padding: 35px 25px;
-    box-shadow: 0 10px 35px rgba(0,0,0,0.1);
+    padding: 32px 25px;
+    box-shadow: 0 12px 35px rgba(0,0,0,.1);
 }
 
 .logo {
     text-align: center;
-    font-size: 32px;
+    font-size: 34px;
     font-weight: 800;
-    color: #72b82a;
     margin-bottom: 8px;
 }
 
-.login-subtitle {
-    text-align: center;
-    color: #777;
-    margin-bottom: 30px;
+.logo span {
+    color: #67b52f;
 }
 
-.login-box input {
+.loginSub {
+    text-align: center;
+    color: #777;
+    margin-bottom: 28px;
+}
+
+.loginBox input {
     width: 100%;
     height: 52px;
     border: 1px solid #ddd;
-    border-radius: 13px;
+    border-radius: 14px;
     padding: 0 15px;
-    font-size: 16px;
     margin-bottom: 12px;
     outline: none;
 }
 
-.login-box input:focus {
-    border-color: #8fd14f;
+.loginBox input:focus {
+    border-color: #78c83f;
 }
 
-.login-btn {
+.loginBtn {
     width: 100%;
     height: 52px;
-    border: none;
-    border-radius: 13px;
-    background: #8fd14f;
+    border-radius: 14px;
+    background: #78c83f;
     color: white;
-    font-size: 17px;
-    font-weight: bold;
+    font-weight: 700;
+}
+
+.loginBtn:active {
+    transform: scale(.98);
+}
+
+.loginError {
+    min-height: 22px;
+    color: #e53935;
+    text-align: center;
+    font-size: 14px;
+    margin-top: 12px;
+}
+
+/* =========================
+   APP
+========================= */
+
+#app {
+    display: none;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.appLayout {
+    height: 100%;
+    display: flex;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.sidebar {
+    width: 310px;
+    background: white;
+    border-right: 1px solid #e9e9e9;
+    display: flex;
+    flex-direction: column;
+}
+
+.sideTop {
+    height: 72px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 18px;
+    border-bottom: 1px solid #eee;
+}
+
+.sideTitle {
+    font-size: 23px;
+    font-weight: 800;
+}
+
+.profileMini {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px;
+    border-bottom: 1px solid #eee;
+}
+
+.avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #dff5c8;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.profileName {
+    font-weight: 700;
+}
+
+.profileStatus {
+    color: #777;
+    font-size: 13px;
+    margin-top: 3px;
+}
+
+.friendTitle {
+    padding: 17px 18px 8px;
+    color: #888;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.friendList {
+    overflow-y: auto;
+    flex: 1;
+}
+
+.friend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 13px 18px;
     cursor: pointer;
 }
 
-.login-btn:active {
-    transform: scale(0.98);
+.friend:hover {
+    background: #f5f7f5;
 }
 
-.login-error {
-    color: #e74c3c;
-    text-align: center;
-    min-height: 22px;
-    margin: 10px 0;
+.friend.active {
+    background: #eaf8df;
 }
 
-/* 채팅 */
+.friendInfo {
+    flex: 1;
+    min-width: 0;
+}
 
-#chatScreen {
-    display: none;
-    height: 100vh;
-    height: 100dvh;
+.friendName {
+    font-weight: 700;
+}
+
+.friendLast {
+    font-size: 13px;
+    color: #999;
+    margin-top: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.onlineDot {
+    width: 10px;
+    height: 10px;
+    background: #4caf50;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.offlineDot {
+    width: 10px;
+    height: 10px;
+    background: #bbb;
+    border-radius: 50%;
+    border: 2px solid white;
+}
+
+.logoutBtn {
+    margin: 14px;
+    height: 44px;
+    border-radius: 12px;
+    background: #f1f1f1;
+    color: #555;
+}
+
+/* =========================
+   CHAT
+========================= */
+
+.chat {
+    flex: 1;
+    display: flex;
     flex-direction: column;
-    background: #f7f8fa;
+    min-width: 0;
 }
 
-.header {
-    height: 64px;
-    flex-shrink: 0;
+.chatHeader {
+    height: 72px;
     background: white;
     border-bottom: 1px solid #eee;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 0 16px;
+    padding: 0 20px;
+    gap: 12px;
 }
 
-.header-left {
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.mobileBack {
+    display: none;
+    background: transparent;
+    font-size: 25px;
 }
 
-.header-title {
-    font-size: 20px;
-    font-weight: bold;
+.chatUserName {
+    font-weight: 800;
+    font-size: 18px;
 }
 
-.online-dot {
-    width: 9px;
-    height: 9px;
-    background: #6ed34a;
-    border-radius: 50%;
-}
-
-.header-user {
-    font-size: 14px;
-    color: #777;
-}
-
-.logout-btn {
-    border: none;
-    background: #f1f3f5;
-    border-radius: 10px;
-    padding: 8px 11px;
-    cursor: pointer;
+.chatUserStatus {
+    color: #888;
+    font-size: 12px;
+    margin-top: 3px;
 }
 
 .messages {
     flex: 1;
     overflow-y: auto;
-    padding: 18px 14px;
+    padding: 20px;
+    background: #edf1f4;
 }
 
-.message-row {
+.emptyChat {
+    height: 100%;
     display: flex;
-    flex-direction: column;
-    margin-bottom: 13px;
+    align-items: center;
+    justify-content: center;
+    color: #999;
+    text-align: center;
 }
 
-.message-row.mine {
-    align-items: flex-end;
+.messageRow {
+    display: flex;
+    margin-bottom: 10px;
 }
 
-.message-row.other {
-    align-items: flex-start;
+.messageRow.mine {
+    justify-content: flex-end;
 }
 
-.nickname {
+.messageRow.other {
+    justify-content: flex-start;
+}
+
+.messageBubble {
+    max-width: min(72%, 520px);
+}
+
+.sender {
     font-size: 12px;
     color: #777;
-    margin: 0 7px 4px;
+    margin-bottom: 4px;
 }
 
-.message-line {
-    display: flex;
-    align-items: flex-end;
-    gap: 5px;
-    max-width: 85%;
-}
-
-.mine .message-line {
-    flex-direction: row-reverse;
+.mine .sender {
+    text-align: right;
 }
 
 .bubble {
+    display: inline-block;
     padding: 10px 13px;
     border-radius: 17px;
     background: white;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.06);
-    word-break: break-word;
-    font-size: 15px;
     line-height: 1.4;
+    word-break: break-word;
+    box-shadow: 0 1px 2px rgba(0,0,0,.05);
 }
 
 .mine .bubble {
-    background: #dff7b8;
+    background: #8ed653;
+    color: white;
 }
 
-.message-info {
+.messageMeta {
     font-size: 10px;
-    color: #999;
-    white-space: nowrap;
+    color: #888;
+    margin-top: 3px;
 }
 
-.input-area {
-    flex-shrink: 0;
+.mine .messageMeta {
+    text-align: right;
+}
+
+/* =========================
+   INPUT
+========================= */
+
+.inputArea {
     background: white;
+    padding: 12px;
     border-top: 1px solid #eee;
-    padding: 10px;
     display: flex;
     gap: 8px;
-    padding-bottom: calc(10px + env(safe-area-inset-bottom));
+    align-items: center;
 }
 
-.message-input {
+.emojiBtn,
+.attachBtn {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #f3f3f3;
+    font-size: 20px;
+}
+
+.messageInput {
     flex: 1;
-    height: 45px;
+    min-width: 0;
+    height: 42px;
     border: 1px solid #ddd;
-    border-radius: 23px;
-    padding: 0 16px;
-    font-size: 15px;
+    border-radius: 15px;
+    padding: 0 13px;
     outline: none;
 }
 
-.send-btn {
-    width: 45px;
-    height: 45px;
-    border: none;
-    border-radius: 50%;
-    background: #8fd14f;
+.sendBtn {
+    width: 60px;
+    height: 42px;
+    border-radius: 13px;
+    background: #78c83f;
     color: white;
-    font-size: 20px;
-    font-weight: bold;
+    font-weight: 700;
 }
 
-.empty {
-    text-align: center;
-    color: #aaa;
-    margin-top: 40px;
+.sendBtn:disabled {
+    background: #ccc;
+}
+
+/* =========================
+   EMOJI
+========================= */
+
+.emojiPanel {
+    display: none;
+    position: absolute;
+    bottom: 70px;
+    left: 10px;
+    background: white;
+    width: 280px;
+    padding: 12px;
+    border-radius: 16px;
+    box-shadow: 0 8px 30px rgba(0,0,0,.18);
+    z-index: 10;
+}
+
+.emojiGrid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+}
+
+.emojiGrid button {
+    background: transparent;
+    font-size: 23px;
+    padding: 5px;
+}
+
+/* =========================
+   FILE
+========================= */
+
+#fileInput {
+    display: none;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media (max-width: 700px) {
+
+    .sidebar {
+        width: 100%;
+    }
+
+    .chat {
+        display: none;
+        width: 100%;
+    }
+
+    .appLayout.chatOpen .sidebar {
+        display: none;
+    }
+
+    .appLayout.chatOpen .chat {
+        display: flex;
+    }
+
+    .mobileBack {
+        display: block;
+    }
+
+    .messageBubble {
+        max-width: 82%;
+    }
 }
 </style>
 </head>
 
 <body>
 
-<!-- 로그인 화면 -->
-<div id="loginScreen">
-    <div class="login-box">
+<!-- =========================
+     LOGIN
+========================= -->
 
-        <div class="logo">FriendsChat</div>
-        <div class="login-subtitle">친구들과 함께하는 채팅</div>
+<section id="loginScreen">
+
+    <div class="loginBox">
+
+        <div class="logo">
+            Friends<span>Chat</span>
+        </div>
+
+        <div class="loginSub">
+            친구들과 편하게 이야기해보세요
+        </div>
 
         <input
             id="username"
             type="text"
             placeholder="아이디"
-            autocomplete="off"
+            autocomplete="username"
         >
 
         <input
             id="password"
             type="password"
             placeholder="비밀번호"
-            autocomplete="off"
+            autocomplete="current-password"
         >
 
-        <div id="loginError" class="login-error"></div>
-
-        <button class="login-btn" onclick="login()">
+        <button class="loginBtn" onclick="login()">
             로그인
         </button>
 
-    </div>
-</div>
-
-
-<!-- 채팅 화면 -->
-<div id="chatScreen">
-
-    <div class="header">
-
-        <div class="header-left">
-            <div class="online-dot"></div>
-            <div class="header-title">FriendsChat</div>
-        </div>
-
-        <div class="header-user">
-            <span id="currentUser"></span>
-            <button class="logout-btn" onclick="logout()">로그아웃</button>
-        </div>
+        <div id="loginError" class="loginError"></div>
 
     </div>
 
-    <div id="messages" class="messages">
-        <div class="empty">메시지를 불러오는 중...</div>
+</section>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<section id="app">
+
+    <div id="appLayout" class="appLayout">
+
+        <!-- SIDEBAR -->
+
+        <aside class="sidebar">
+
+            <div class="sideTop">
+                <div class="sideTitle">친구</div>
+            </div>
+
+            <div class="profileMini">
+
+                <div id="myAvatar" class="avatar">
+                    🙂
+                </div>
+
+                <div>
+                    <div id="myName" class="profileName">
+                        -
+                    </div>
+
+                    <div class="profileStatus">
+                        내 프로필
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="friendTitle">
+                친구 목록
+            </div>
+
+            <div id="friendList" class="friendList"></div>
+
+            <button class="logoutBtn" onclick="logout()">
+                로그아웃
+            </button>
+
+        </aside>
+
+
+        <!-- CHAT -->
+
+        <main class="chat">
+
+            <header class="chatHeader">
+
+                <button
+                    class="mobileBack"
+                    onclick="closeChat()"
+                >
+                    ‹
+                </button>
+
+                <div id="chatAvatar" class="avatar">
+                    💬
+                </div>
+
+                <div>
+
+                    <div id="chatUserName" class="chatUserName">
+                        친구를 선택하세요
+                    </div>
+
+                    <div id="chatUserStatus" class="chatUserStatus">
+                    </div>
+
+                </div>
+
+            </header>
+
+
+            <div id="messages" class="messages">
+
+                <div class="emptyChat">
+                    왼쪽에서 친구를 선택하세요.
+                </div>
+
+            </div>
+
+
+            <div
+                class="inputArea"
+                style="position:relative;"
+            >
+
+                <div
+                    id="emojiPanel"
+                    class="emojiPanel"
+                >
+                    <div
+                        id="emojiGrid"
+                        class="emojiGrid"
+                    ></div>
+                </div>
+
+                <button
+                    class="emojiBtn"
+                    onclick="toggleEmoji()"
+                >
+                    😀
+                </button>
+
+                <button
+                    class="attachBtn"
+                    onclick="document.getElementById('fileInput').click()"
+                >
+                    📎
+                </button>
+
+                <input
+                    id="fileInput"
+                    type="file"
+                    onchange="fileSelected(event)"
+                >
+
+                <input
+                    id="messageInput"
+                    class="messageInput"
+                    type="text"
+                    placeholder="메시지를 입력하세요"
+                    disabled
+                    onkeydown="handleEnter(event)"
+                >
+
+                <button
+                    id="sendBtn"
+                    class="sendBtn"
+                    onclick="sendMessage()"
+                    disabled
+                >
+                    전송
+                </button>
+
+            </div>
+
+        </main>
+
     </div>
 
-    <div class="input-area">
-
-        <input
-            id="messageInput"
-            class="message-input"
-            type="text"
-            placeholder="메시지를 입력하세요"
-            autocomplete="off"
-        >
-
-        <button class="send-btn" onclick="sendMessage()">➤</button>
-
-    </div>
-
-</div>
+</section>
 
 
 <script>
+
+/* ==================================================
+   SUPABASE
+================================================== */
+
 const SUPABASE_URL =
     "https://qtprsnwbeqwuzqpnlxot.supabase.co";
 
+/*
+   ↓↓↓ 기존에 사용하던 anon key를 여기에 넣어줘.
+*/
 const SUPABASE_ANON_KEY =
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cHJzbndiZXE3dXpxcG5seG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1MjIwNjksImV4cCI6MjEwMzkyODA2OX0.O39oJfWYgvI2O40EcI4cgw3yM1HNrvz0n--CXiKMThM";
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cHJzbndiZXF3dXpxcG5seG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNTIwNjksImV4cCI6MjEwMzkyODA2OX0.O39oJfWYgvI2O40EcI4cgw3yM1HNrvz0n--CXiKMThM";
 
 const supabaseClient =
-    supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
 
-let currentUser = localStorage.getItem("friendschat_user");
+
+/* ==================================================
+   STATE
+================================================== */
+
+let currentUser = null;
+let currentFriend = null;
+let currentRoom = null;
+let realtimeChannel = null;
 
 
-/* 로그인 상태 확인 */
+/* ==================================================
+   DOM
+================================================== */
 
-if (currentUser) {
-    showChat();
+const loginScreen =
+    document.getElementById("loginScreen");
+
+const app =
+    document.getElementById("app");
+
+const appLayout =
+    document.getElementById("appLayout");
+
+const usernameInput =
+    document.getElementById("username");
+
+const passwordInput =
+    document.getElementById("password");
+
+const loginError =
+    document.getElementById("loginError");
+
+const friendList =
+    document.getElementById("friendList");
+
+const messagesBox =
+    document.getElementById("messages");
+
+const messageInput =
+    document.getElementById("messageInput");
+
+const sendBtn =
+    document.getElementById("sendBtn");
+
+const chatUserName =
+    document.getElementById("chatUserName");
+
+const chatUserStatus =
+    document.getElementById("chatUserStatus");
+
+const myName =
+    document.getElementById("myName");
+
+const myAvatar =
+    document.getElementById("myAvatar");
+
+const chatAvatar =
+    document.getElementById("chatAvatar");
+
+
+/* ==================================================
+   EMOJI
+================================================== */
+
+const emojis = [
+    "😀","😃","😄","😁","😆","😅","😂",
+    "🤣","😊","🙂","🙃","😉","😌","😍",
+    "🥰","😘","😎","🤩","🥳","😋","😜",
+    "🤔","🤗","😮","😭","😢","😡","😱",
+    "👍","👎","👏","🙏","❤️","💚","💙",
+    "💜","🔥","✨","🎉","🎂","🤣","ㅋㅋ",
+    "🙌","💯","😴","🤪","😇","🥹"
+];
+
+function makeEmojiPanel() {
+
+    const grid =
+        document.getElementById("emojiGrid");
+
+    grid.innerHTML = "";
+
+    emojis.forEach(emoji => {
+
+        const button =
+            document.createElement("button");
+
+        button.textContent = emoji;
+
+        button.onclick = () => {
+
+            messageInput.value += emoji;
+
+            messageInput.focus();
+
+        };
+
+        grid.appendChild(button);
+
+    });
+}
+
+makeEmojiPanel();
+
+
+function toggleEmoji() {
+
+    const panel =
+        document.getElementById("emojiPanel");
+
+    panel.style.display =
+        panel.style.display === "block"
+        ? "none"
+        : "block";
 }
 
 
-/* 로그인 */
+/* ==================================================
+   LOGIN
+================================================== */
 
 async function login() {
 
     const username =
-        document.getElementById("username").value.trim();
+        usernameInput.value.trim();
 
     const password =
-        document.getElementById("password").value;
+        passwordInput.value;
 
-    const error =
-        document.getElementById("loginError");
-
-    error.textContent = "";
+    loginError.textContent = "";
 
     if (!username || !password) {
-        error.textContent = "아이디와 비밀번호를 입력하세요.";
+
+        loginError.textContent =
+            "아이디와 비밀번호를 입력하세요.";
+
         return;
     }
 
-    const { data, error: dbError } =
-        await supabaseClient
-            .from("chat_users")
-            .select("username")
-            .eq("username", username)
-            .eq("password", password)
-            .maybeSingle();
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("chat_users")
+        .select("username")
+        .eq("username", username)
+        .eq("password", password)
+        .maybeSingle();
 
-    if (dbError) {
-        console.error(dbError);
-        error.textContent = "로그인 오류가 발생했습니다.";
+    if (error) {
+
+        console.error(error);
+
+        loginError.textContent =
+            "로그인 오류가 발생했습니다.";
+
         return;
     }
 
     if (!data) {
-        error.textContent = "아이디 또는 비밀번호가 틀렸습니다.";
+
+        loginError.textContent =
+            "아이디 또는 비밀번호가 틀렸습니다.";
+
         return;
     }
 
@@ -378,235 +857,644 @@ async function login() {
         currentUser
     );
 
-    showChat();
+    await setOnline();
+
+    loginScreen.style.display = "none";
+    app.style.display = "block";
+
+    myName.textContent = currentUser;
+
+    myAvatar.textContent =
+        currentUser.charAt(0);
+
+    await loadFriends();
+
 }
 
 
-/* 채팅 화면 */
+/* ==================================================
+   AUTO LOGIN
+================================================== */
 
-function showChat() {
+async function checkAutoLogin() {
 
-    document.getElementById("loginScreen").style.display = "none";
+    const saved =
+        localStorage.getItem(
+            "friendschat_user"
+        );
 
-    document.getElementById("chatScreen").style.display = "flex";
+    if (!saved) return;
 
-    document.getElementById("currentUser").textContent =
-        currentUser;
+    const {
+        data
+    } = await supabaseClient
+        .from("chat_users")
+        .select("username")
+        .eq("username", saved)
+        .maybeSingle();
 
-    loadMessages();
+    if (!data) {
 
-    subscribeMessages();
+        localStorage.removeItem(
+            "friendschat_user"
+        );
 
-    document.getElementById("messageInput").focus();
-}
-
-
-/* 로그아웃 */
-
-function logout() {
-
-    localStorage.removeItem("friendschat_user");
-
-    currentUser = null;
-
-    location.reload();
-}
-
-
-/* 메시지 불러오기 */
-
-async function loadMessages() {
-
-    const box =
-        document.getElementById("messages");
-
-    const { data, error } =
-        await supabaseClient
-            .from("messages")
-            .select("*")
-            .order("id", { ascending: true });
-
-    if (error) {
-        console.error(error);
-        box.innerHTML =
-            '<div class="empty">메시지를 불러오지 못했습니다.</div>';
         return;
     }
 
-    box.innerHTML = "";
+    currentUser = data.username;
+
+    await setOnline();
+
+    loginScreen.style.display = "none";
+    app.style.display = "block";
+
+    myName.textContent = currentUser;
+
+    myAvatar.textContent =
+        currentUser.charAt(0);
+
+    await loadFriends();
+}
+
+checkAutoLogin();
+
+
+/* ==================================================
+   ONLINE
+================================================== */
+
+async function setOnline() {
+
+    if (!currentUser) return;
+
+    await supabaseClient
+        .from("profiles")
+        .update({
+            status: "online",
+            last_seen: new Date().toISOString()
+        })
+        .eq("username", currentUser);
+}
+
+
+async function setOffline() {
+
+    if (!currentUser) return;
+
+    await supabaseClient
+        .from("profiles")
+        .update({
+            status: "offline",
+            last_seen: new Date().toISOString()
+        })
+        .eq("username", currentUser);
+}
+
+
+window.addEventListener(
+    "beforeunload",
+    () => {
+        setOffline();
+    }
+);
+
+
+/* ==================================================
+   FRIENDS
+================================================== */
+
+async function loadFriends() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("profiles")
+        .select("*")
+        .neq("username", currentUser)
+        .order("display_name");
+
+    if (error) {
+
+        console.error(error);
+
+        return;
+    }
+
+    friendList.innerHTML = "";
 
     if (!data || data.length === 0) {
 
-        box.innerHTML =
-            '<div class="empty">아직 메시지가 없습니다.</div>';
+        friendList.innerHTML =
+            '<div style="padding:20px;color:#999;">친구가 없습니다.</div>';
 
         return;
     }
 
-    data.forEach(addMessage);
+    data.forEach(friend => {
 
-    scrollToBottom();
+        const item =
+            document.createElement("div");
+
+        item.className = "friend";
+
+        item.dataset.username =
+            friend.username;
+
+        item.innerHTML = `
+
+            <div class="avatar">
+                ${escapeHtml(
+                    friend.display_name.charAt(0)
+                )}
+            </div>
+
+            <div class="friendInfo">
+
+                <div class="friendName">
+                    ${escapeHtml(friend.display_name)}
+                </div>
+
+                <div class="friendLast">
+                    ${friend.status === "online"
+                        ? "온라인"
+                        : "오프라인"}
+                </div>
+
+            </div>
+
+            <div class="${
+                friend.status === "online"
+                ? "onlineDot"
+                : "offlineDot"
+            }"></div>
+        `;
+
+        item.onclick = () =>
+            openChat(friend);
+
+        friendList.appendChild(item);
+
+    });
 }
 
 
-/* 메시지 표시 */
+/* ==================================================
+   FIND ROOM
+================================================== */
 
-function addMessage(message) {
+async function getRoom(user1, user2) {
 
-    const box =
-        document.getElementById("messages");
+    const keys = [
+        `${user1}_${user2}`,
+        `${user2}_${user1}`
+    ];
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("chat_rooms")
+        .select("*")
+        .in("room_key", keys)
+        .eq("is_group", false)
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+
+        console.error(
+            "채팅방 찾기 오류:",
+            error
+        );
+
+        return null;
+    }
+
+    return data;
+}
+
+
+/* ==================================================
+   OPEN CHAT
+================================================== */
+
+async function openChat(friend) {
+
+    currentFriend = friend;
+
+    document
+        .querySelectorAll(".friend")
+        .forEach(el => {
+
+            el.classList.toggle(
+                "active",
+                el.dataset.username ===
+                friend.username
+            );
+
+        });
+
+    chatUserName.textContent =
+        friend.display_name;
+
+    chatAvatar.textContent =
+        friend.display_name.charAt(0);
+
+    chatUserStatus.textContent =
+        friend.status === "online"
+        ? "온라인"
+        : "오프라인";
+
+    currentRoom =
+        await getRoom(
+            currentUser,
+            friend.username
+        );
+
+    if (!currentRoom) {
+
+        messagesBox.innerHTML = `
+            <div class="emptyChat">
+                채팅방을 찾을 수 없습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+    messageInput.disabled = false;
+    sendBtn.disabled = false;
+
+    appLayout.classList.add("chatOpen");
+
+    await loadMessages();
+
+    subscribeMessages();
+
+    messageInput.focus();
+}
+
+
+/* ==================================================
+   LOAD MESSAGES
+================================================== */
+
+async function loadMessages() {
+
+    if (!currentRoom) return;
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+        .from("messages")
+        .select("*")
+        .eq("room_id", currentRoom.id)
+        .order("created_at", {
+            ascending: true
+        });
+
+    if (error) {
+
+        console.error(
+            "메시지 로딩 오류:",
+            error
+        );
+
+        messagesBox.innerHTML = `
+            <div class="emptyChat">
+                메시지를 불러오지 못했습니다.
+            </div>
+        `;
+
+        return;
+    }
+
+    messagesBox.innerHTML = "";
+
+    if (!data || data.length === 0) {
+
+        messagesBox.innerHTML = `
+            <div class="emptyChat">
+                아직 메시지가 없습니다.<br>
+                먼저 인사를 보내보세요 👋
+            </div>
+        `;
+
+        return;
+    }
+
+    data.forEach(message => {
+
+        renderMessage(message);
+
+    });
+
+    scrollMessages();
+
+}
+
+
+/* ==================================================
+   RENDER MESSAGE
+================================================== */
+
+function renderMessage(message) {
+
+    const sender =
+        message.sender_username ||
+        message.nickname ||
+        "";
+
+    const mine =
+        sender === currentUser;
 
     const row =
         document.createElement("div");
 
-    const mine =
-        message.nickname === currentUser;
-
     row.className =
-        "message-row " +
+        "messageRow " +
         (mine ? "mine" : "other");
 
-    const nickname =
+    const bubbleWrap =
         document.createElement("div");
 
-    nickname.className = "nickname";
-
-    nickname.textContent =
-        mine ? "" : message.nickname;
-
-    const line =
-        document.createElement("div");
-
-    line.className = "message-line";
-
-    const bubble =
-        document.createElement("div");
-
-    bubble.className = "bubble";
-
-    bubble.textContent =
-        message.message;
-
-    const info =
-        document.createElement("div");
-
-    info.className = "message-info";
+    bubbleWrap.className =
+        "messageBubble";
 
     const time =
         message.created_at
-            ? new Date(message.created_at)
-                .toLocaleTimeString("ko-KR", {
-                    hour: "2-digit",
-                    minute: "2-digit"
-                })
-            : "";
+        ? formatTime(message.created_at)
+        : "";
 
-    info.textContent = time;
+    bubbleWrap.innerHTML = `
 
-    line.appendChild(bubble);
-    line.appendChild(info);
+        <div class="sender">
+            ${escapeHtml(sender)}
+        </div>
 
-    row.appendChild(nickname);
-    row.appendChild(line);
+        <div class="bubble">
+            ${escapeHtml(message.message)}
+        </div>
 
-    box.appendChild(row);
+        <div class="messageMeta">
+            ${time}
+        </div>
+    `;
+
+    row.appendChild(bubbleWrap);
+
+    messagesBox.appendChild(row);
+
 }
 
 
-/* 메시지 전송 */
+/* ==================================================
+   SEND
+================================================== */
 
 async function sendMessage() {
 
-    const input =
-        document.getElementById("messageInput");
+    if (!currentUser) return;
+
+    if (!currentRoom) return;
 
     const text =
-        input.value.trim();
+        messageInput.value.trim();
 
     if (!text) return;
 
-    input.disabled = true;
+    sendBtn.disabled = true;
 
-    const { error } =
-        await supabaseClient
-            .from("messages")
-            .insert({
-                nickname: currentUser,
-                message: text
-            });
-
-    input.disabled = false;
+    const {
+        error
+    } = await supabaseClient
+        .from("messages")
+        .insert({
+            nickname: currentUser,
+            sender_username: currentUser,
+            message: text,
+            room_id: currentRoom.id
+        });
 
     if (error) {
+
         console.error(error);
-        alert("메시지 전송에 실패했습니다.");
+
+        alert(
+            "메시지 전송 실패\n" +
+            error.message
+        );
+
+        sendBtn.disabled = false;
+
         return;
     }
 
-    input.value = "";
-    input.focus();
+    messageInput.value = "";
+
+    sendBtn.disabled = false;
+
+    messageInput.focus();
 }
 
 
-/* 엔터 전송 */
+/* ==================================================
+   ENTER
+================================================== */
 
-document
-    .getElementById("messageInput")
-    .addEventListener("keydown", function(e) {
+function handleEnter(event) {
 
-        if (e.key === "Enter") {
-            e.preventDefault();
-            sendMessage();
-        }
+    if (event.key === "Enter") {
 
-    });
+        event.preventDefault();
+
+        sendMessage();
+
+    }
+}
 
 
-/* 실시간 메시지 */
+/* ==================================================
+   REALTIME
+================================================== */
 
 function subscribeMessages() {
 
-    supabaseClient
-        .channel("friendschat-messages")
-        .on(
-            "postgres_changes",
-            {
-                event: "INSERT",
-                schema: "public",
-                table: "messages"
-            },
-            payload => {
+    if (!currentRoom) return;
 
-                const box =
-                    document.getElementById("messages");
+    if (realtimeChannel) {
 
-                const empty =
-                    box.querySelector(".empty");
+        supabaseClient
+            .removeChannel(
+                realtimeChannel
+            );
 
-                if (empty) {
-                    box.innerHTML = "";
+    }
+
+    realtimeChannel =
+        supabaseClient
+            .channel(
+                "room-" +
+                currentRoom.id +
+                "-" +
+                Date.now()
+            )
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "messages",
+                    filter:
+                        "room_id=eq." +
+                        currentRoom.id
+                },
+                payload => {
+
+                    renderMessage(
+                        payload.new
+                    );
+
+                    scrollMessages();
+
                 }
-
-                addMessage(payload.new);
-
-                scrollToBottom();
-            }
-        )
-        .subscribe();
+            )
+            .subscribe();
 }
 
 
-/* 아래로 이동 */
+/* ==================================================
+   CLOSE CHAT
+================================================== */
 
-function scrollToBottom() {
+function closeChat() {
 
-    const box =
-        document.getElementById("messages");
+    appLayout.classList.remove(
+        "chatOpen"
+    );
 
-    setTimeout(() => {
-        box.scrollTop = box.scrollHeight;
-    }, 50);
+    currentFriend = null;
+    currentRoom = null;
+
+    messageInput.value = "";
+
+    messageInput.disabled = true;
+    sendBtn.disabled = true;
+
+    if (realtimeChannel) {
+
+        supabaseClient
+            .removeChannel(
+                realtimeChannel
+            );
+
+        realtimeChannel = null;
+    }
+
 }
+
+
+/* ==================================================
+   FILE
+================================================== */
+
+function fileSelected(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) return;
+
+    alert(
+        "파일 선택 완료: " +
+        file.name +
+        "\n\n파일 업로드 기능은 Supabase Storage 연결 후 활성화됩니다."
+    );
+
+    event.target.value = "";
+}
+
+
+/* ==================================================
+   LOGOUT
+================================================== */
+
+async function logout() {
+
+    await setOffline();
+
+    if (realtimeChannel) {
+
+        await supabaseClient
+            .removeChannel(
+                realtimeChannel
+            );
+
+    }
+
+    localStorage.removeItem(
+        "friendschat_user"
+    );
+
+    currentUser = null;
+    currentFriend = null;
+    currentRoom = null;
+
+    app.style.display = "none";
+    loginScreen.style.display = "flex";
+
+    usernameInput.value = "";
+    passwordInput.value = "";
+    loginError.textContent = "";
+
+    messageInput.disabled = true;
+    sendBtn.disabled = true;
+
+    appLayout.classList.remove(
+        "chatOpen"
+    );
+}
+
+
+/* ==================================================
+   UTILS
+================================================== */
+
+function scrollMessages() {
+
+    messagesBox.scrollTop =
+        messagesBox.scrollHeight;
+}
+
+
+function formatTime(dateString) {
+
+    const date =
+        new Date(dateString);
+
+    return date.toLocaleTimeString(
+        "ko-KR",
+        {
+            hour: "2-digit",
+            minute: "2-digit"
+        }
+    );
+}
+
+
+function escapeHtml(value) {
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
 </script>
 
 </body>
