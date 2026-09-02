@@ -2,9 +2,14 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0,
+      maximum-scale=1.0, user-scalable=no">
 
 <title>친구채팅</title>
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 * {
@@ -15,7 +20,7 @@
 body {
     margin: 0;
     font-family: Arial, "Noto Sans KR", sans-serif;
-    background: #f7f7f7;
+    background: #e8e8e8;
     color: #222;
 }
 
@@ -52,18 +57,17 @@ body {
     border-radius: 50%;
     width: 38px;
     height: 38px;
-    font-size: 19px;
+    font-size: 18px;
     cursor: pointer;
 }
 
-/* 채팅 영역 */
+/* 채팅 */
 .chat {
     flex: 1;
     overflow-y: auto;
     padding: 18px 12px 12px;
 }
 
-/* 날짜 */
 .date {
     text-align: center;
     margin: 5px 0 18px;
@@ -92,7 +96,7 @@ body {
 .profile {
     width: 36px;
     height: 36px;
-    background: #fff;
+    background: white;
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -138,7 +142,7 @@ body {
     white-space: nowrap;
 }
 
-/* 입력창 */
+/* 입력 */
 .input-area {
     min-height: 62px;
     background: white;
@@ -187,7 +191,7 @@ body {
     transform: scale(0.92);
 }
 
-/* 닉네임 설정 창 */
+/* 닉네임 창 */
 .modal-bg {
     position: fixed;
     inset: 0;
@@ -247,12 +251,13 @@ body {
     background: #ffe94a;
 }
 
-/* PC */
-@media (min-width: 601px) {
-    body {
-        background: #e8e8e8;
-    }
+.status {
+    font-size: 11px;
+    color: #777;
+    margin-left: 8px;
+}
 
+@media (min-width: 601px) {
     .app {
         box-shadow: 0 0 25px rgba(0,0,0,0.12);
     }
@@ -264,50 +269,25 @@ body {
 
 <div class="app">
 
-    <!-- 상단 -->
     <div class="header">
-        <div class="header-title">💬 친구채팅</div>
+        <div class="header-title">
+            💬 친구채팅
+            <span class="status" id="status">연결 중...</span>
+        </div>
+
         <button onclick="openNickname()">⚙️</button>
     </div>
 
-    <!-- 채팅 -->
     <div class="chat" id="chat">
 
         <div class="date">
-            <span>오늘</span>
-        </div>
-
-        <div class="message">
-            <div class="profile">🐰</div>
-
-            <div class="message-content">
-                <div class="name">친구1</div>
-                <span class="bubble">안녕ㅋㅋ</span>
-            </div>
-
-            <div class="time">오후 11:40</div>
-        </div>
-
-        <div class="message">
-            <div class="profile">🐱</div>
-
-            <div class="message-content">
-                <div class="name">친구2</div>
-                <span class="bubble">야 여기 뭐임ㅋㅋ</span>
-            </div>
-
-            <div class="time">오후 11:41</div>
-        </div>
-
-        <div class="message me">
-            <div class="time">오후 11:42</div>
-            <span class="bubble">우리 채팅사이트임 ㅋㅋ</span>
+            <span>친구채팅</span>
         </div>
 
     </div>
 
-    <!-- 입력 -->
     <div class="input-area">
+
         <button class="plus" onclick="plusMessage()">＋</button>
 
         <input
@@ -319,12 +299,13 @@ body {
         >
 
         <button class="send" onclick="sendMessage()">➤</button>
+
     </div>
 
 </div>
 
 
-<!-- 닉네임 설정 -->
+<!-- 닉네임 -->
 <div class="modal-bg" id="nicknameModal">
 
     <div class="modal">
@@ -359,69 +340,296 @@ body {
 
 <script>
 
-let nickname = localStorage.getItem("nickname") || "나";
+/* ==========================================
+   SUPABASE 설정
+========================================== */
 
-const input = document.getElementById("messageInput");
-const chat = document.getElementById("chat");
+const SUPABASE_URL =
+    "https://qtprsnwbeqwuzqpnlxot.supabase.co";
+
+const SUPABASE_ANON_KEY =
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cHJzbndiZXF3dXpxcG5seG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNTIwNjksImV4cCI6MjEwMzkyODA2OX0.O39oJfWYgvI2O40EcI4cgw3yM1HNrvz0n--CXiKMThM";
 
 
-/* 메시지 보내기 */
-function sendMessage() {
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_ANON_KEY
+    );
 
-    const text = input.value.trim();
 
-    if (!text) return;
+/* ==========================================
+   기본 설정
+========================================== */
 
-    const message = document.createElement("div");
+let nickname =
+    localStorage.getItem("nickname") || "나";
 
-    message.className = "message me";
+const chat =
+    document.getElementById("chat");
 
-    const time = new Date().toLocaleTimeString("ko-KR", {
+const input =
+    document.getElementById("messageInput");
+
+const status =
+    document.getElementById("status");
+
+
+/* ==========================================
+   시간
+========================================== */
+
+function formatTime(dateString) {
+
+    const date = new Date(dateString);
+
+    return date.toLocaleTimeString("ko-KR", {
         hour: "numeric",
         minute: "2-digit"
     });
 
-    message.innerHTML = `
-        <div class="time">${time}</div>
-        <span class="bubble"></span>
-    `;
-
-    message.querySelector(".bubble").textContent = text;
-
-    chat.appendChild(message);
-
-    input.value = "";
-
-    chat.scrollTop = chat.scrollHeight;
 }
 
 
-/* 엔터키 */
-input.addEventListener("keydown", function(e) {
+/* ==========================================
+   메시지 화면에 표시
+========================================== */
 
-    if (e.key === "Enter") {
-        sendMessage();
+function addMessage(data) {
+
+    const message =
+        document.createElement("div");
+
+    const isMe =
+        data.nickname === nickname;
+
+    message.className =
+        "message" + (isMe ? " me" : "");
+
+
+    if (isMe) {
+
+        message.innerHTML = `
+            <div class="time">
+                ${formatTime(data.created_at)}
+            </div>
+
+            <span class="bubble"></span>
+        `;
+
+        message.querySelector(".bubble")
+            .textContent = data.message;
+
+    } else {
+
+        message.innerHTML = `
+            <div class="profile">👤</div>
+
+            <div class="message-content">
+
+                <div class="name">
+                    ${escapeHTML(data.nickname)}
+                </div>
+
+                <span class="bubble"></span>
+
+            </div>
+
+            <div class="time">
+                ${formatTime(data.created_at)}
+            </div>
+        `;
+
+        message.querySelector(".bubble")
+            .textContent = data.message;
+
     }
 
-});
+    chat.appendChild(message);
+
+    chat.scrollTop =
+        chat.scrollHeight;
+}
 
 
-/* 닉네임 창 */
+/* ==========================================
+   HTML 안전 처리
+========================================== */
+
+function escapeHTML(text) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent = text;
+
+    return div.innerHTML;
+}
+
+
+/* ==========================================
+   기존 메시지 불러오기
+========================================== */
+
+async function loadMessages() {
+
+    const { data, error } =
+        await supabaseClient
+            .from("messages")
+            .select("*")
+            .order("created_at", {
+                ascending: true
+            });
+
+    if (error) {
+
+        console.error(error);
+
+        status.textContent =
+            "연결 오류";
+
+        return;
+    }
+
+    status.textContent =
+        "● 온라인";
+
+    data.forEach(addMessage);
+
+}
+
+
+/* ==========================================
+   메시지 보내기
+========================================== */
+
+async function sendMessage() {
+
+    const text =
+        input.value.trim();
+
+    if (!text) return;
+
+
+    input.disabled = true;
+
+
+    const { error } =
+        await supabaseClient
+            .from("messages")
+            .insert({
+                nickname: nickname,
+                message: text
+            });
+
+
+    if (error) {
+
+        console.error(error);
+
+        alert(
+            "메시지를 보내지 못했습니다.\n\n" +
+            error.message
+        );
+
+    } else {
+
+        input.value = "";
+
+    }
+
+
+    input.disabled = false;
+
+    input.focus();
+
+}
+
+
+/* ==========================================
+   실시간 메시지
+========================================== */
+
+supabaseClient
+    .channel("messages-realtime")
+    .on(
+        "postgres_changes",
+        {
+            event: "INSERT",
+            schema: "public",
+            table: "messages"
+        },
+        function(payload) {
+
+            addMessage(payload.new);
+
+        }
+    )
+    .subscribe(function(state) {
+
+        console.log(
+            "Realtime 상태:",
+            state
+        );
+
+        if (state === "SUBSCRIBED") {
+
+            status.textContent =
+                "● 온라인";
+
+        }
+
+    });
+
+
+/* ==========================================
+   엔터키
+========================================== */
+
+input.addEventListener(
+    "keydown",
+    function(e) {
+
+        if (e.key === "Enter") {
+
+            sendMessage();
+
+        }
+
+    }
+);
+
+
+/* ==========================================
+   닉네임
+========================================== */
+
 function openNickname() {
 
-    document.getElementById("nicknameModal").style.display = "flex";
+    document
+        .getElementById("nicknameModal")
+        .style.display = "flex";
 
-    document.getElementById("nicknameInput").value = nickname;
+    document
+        .getElementById("nicknameInput")
+        .value = nickname;
 
-    setTimeout(() => {
-        document.getElementById("nicknameInput").focus();
+    setTimeout(function() {
+
+        document
+            .getElementById("nicknameInput")
+            .focus();
+
     }, 100);
+
 }
 
 
 function closeNickname() {
 
-    document.getElementById("nicknameModal").style.display = "none";
+    document
+        .getElementById("nicknameModal")
+        .style.display = "none";
 
 }
 
@@ -429,32 +637,55 @@ function closeNickname() {
 function saveNickname() {
 
     const value =
-        document.getElementById("nicknameInput").value.trim();
+        document
+            .getElementById("nicknameInput")
+            .value
+            .trim();
 
     if (!value) {
+
         alert("닉네임을 입력하세요.");
+
         return;
+
     }
 
     nickname = value;
 
-    localStorage.setItem("nickname", nickname);
+    localStorage.setItem(
+        "nickname",
+        nickname
+    );
 
     closeNickname();
 
+    alert(
+        "닉네임이 '" +
+        nickname +
+        "'으로 변경됐어요!"
+    );
+
 }
 
 
-/* + 버튼 */
+/* ==========================================
+   + 버튼
+========================================== */
+
 function plusMessage() {
 
-    alert("사진 / 파일 기능은 다음 버전에서 추가할 예정!");
+    alert(
+        "사진 / 파일 기능은 다음 단계에서 추가하자!"
+    );
 
 }
 
 
-/* 처음 열었을 때 아래로 */
-chat.scrollTop = chat.scrollHeight;
+/* ==========================================
+   시작
+========================================== */
+
+loadMessages();
 
 </script>
 
