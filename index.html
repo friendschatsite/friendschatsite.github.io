@@ -374,6 +374,63 @@ button {
 }
 
 /* =========================
+   FILE ATTACHMENT
+========================= */
+
+.attachment {
+    margin-top: 5px;
+}
+
+.attachmentImage {
+    display: block;
+    max-width: 280px;
+    max-height: 320px;
+    border-radius: 13px;
+    object-fit: contain;
+    cursor: pointer;
+    background: #f1f1f1;
+}
+
+.fileLink {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 12px;
+    background: #f4f4f4;
+    color: #333;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    max-width: 280px;
+}
+
+.mine .fileLink {
+    background: rgba(255,255,255,.9);
+    color: #333;
+}
+
+.fileName {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.uploadStatus {
+    position: fixed;
+    left: 50%;
+    bottom: 85px;
+    transform: translateX(-50%);
+    display: none;
+    background: rgba(0,0,0,.78);
+    color: white;
+    padding: 11px 17px;
+    border-radius: 20px;
+    font-size: 13px;
+    z-index: 200;
+}
+
+/* =========================
    INPUT
 ========================= */
 
@@ -393,6 +450,7 @@ button {
     border-radius: 12px;
     background: #f3f3f3;
     font-size: 20px;
+    flex-shrink: 0;
 }
 
 .messageInput {
@@ -594,6 +652,15 @@ button {
     .messageBubble {
         max-width: 82%;
     }
+
+    .attachmentImage {
+        max-width: 240px;
+        max-height: 280px;
+    }
+
+    .fileLink {
+        max-width: 240px;
+    }
 }
 </style>
 </head>
@@ -649,8 +716,6 @@ button {
 
     <div id="appLayout" class="appLayout">
 
-        <!-- SIDEBAR -->
-
         <aside class="sidebar">
 
             <div class="sideTop">
@@ -677,9 +742,6 @@ button {
 
             </div>
 
-
-            <!-- FRIENDS -->
-
             <div class="sectionHeader">
                 <span>친구 목록</span>
 
@@ -696,8 +758,6 @@ button {
                 id="friendList"
                 class="friendList"
             ></div>
-
-            <!-- GROUPS -->
 
             <div class="sectionHeader">
                 <span>단체 채팅</span>
@@ -718,8 +778,6 @@ button {
 
         </aside>
 
-
-        <!-- CHAT -->
 
         <main class="chat">
 
@@ -894,6 +952,9 @@ button {
 </div>
 
 
+<div id="uploadStatus" class="uploadStatus"></div>
+
+
 <script>
 
 /* ==================================================
@@ -905,6 +966,10 @@ const SUPABASE_URL =
 
 const SUPABASE_ANON_KEY =
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0cHJzbndiZXF3dXpxcG5seG90Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgzNTIwNjksImV4cCI6MjEwMzkyODA2OX0.O39oJfWYgvI2O40EcI4cgw3yM1HNrvz0n--CXiKMThM";
+
+const STORAGE_BUCKET = "chat-files";
+
+const MAX_FILE_SIZE = 20 * 1024 * 1024;
 
 const supabaseClient =
     supabase.createClient(
@@ -920,6 +985,7 @@ const supabaseClient =
 let currentUser = null;
 let currentFriend = null;
 let currentRoom = null;
+
 let realtimeChannel = null;
 let sidebarChannel = null;
 
@@ -988,6 +1054,12 @@ const groupMemberList =
 const groupModalError =
     document.getElementById("groupModalError");
 
+const fileInput =
+    document.getElementById("fileInput");
+
+const uploadStatus =
+    document.getElementById("uploadStatus");
+
 
 /* ==================================================
    EMOJI
@@ -1040,6 +1112,24 @@ function toggleEmoji() {
         panel.style.display === "block"
         ? "none"
         : "block";
+}
+
+
+/* ==================================================
+   ENTER
+================================================== */
+
+function handleEnter(event) {
+
+    if (
+        event.key === "Enter" &&
+        !event.shiftKey
+    ) {
+
+        event.preventDefault();
+
+        sendMessage();
+    }
 }
 
 
@@ -1126,7 +1216,6 @@ async function startApp() {
     await loadGroups();
 
     subscribeSidebar();
-
 }
 
 
@@ -1553,7 +1642,7 @@ async function openGroupChat(room) {
 
 
 /* ==================================================
-   LOAD MESSAGES
+   LOAD MESSAGES + FILES
 ================================================== */
 
 async function loadMessages() {
@@ -1601,7 +1690,47 @@ async function loadMessages() {
         return;
     }
 
-    data.forEach(renderMessage);
+    const messageIds =
+        data.map(message => message.id);
+
+    let files = [];
+
+    if (messageIds.length > 0) {
+
+        const {
+            data: fileData,
+            error: fileError
+        } = await supabaseClient
+            .from("chat_files")
+            .select("*")
+            .in("message_id", messageIds);
+
+        if (fileError) {
+
+            console.error(
+                "파일 정보 로딩 오류:",
+                fileError
+            );
+
+        } else {
+
+            files = fileData || [];
+        }
+    }
+
+    data.forEach(message => {
+
+        const attachment =
+            files.find(
+                file =>
+                    file.message_id === message.id
+            );
+
+        renderMessage(
+            message,
+            attachment
+        );
+    });
 
     scrollMessages();
 }
@@ -1611,7 +1740,10 @@ async function loadMessages() {
    RENDER MESSAGE
 ================================================== */
 
-function renderMessage(message) {
+function renderMessage(
+    message,
+    attachment = null
+) {
 
     const sender =
         message.sender_username ||
@@ -1639,6 +1771,65 @@ function renderMessage(message) {
         ? formatTime(message.created_at)
         : "";
 
+    let attachmentHtml = "";
+
+    if (attachment) {
+
+        const fileName =
+            escapeHtml(
+                attachment.file_name ||
+                "파일"
+            );
+
+        const fileUrl =
+            escapeHtml(
+                attachment.file_url
+            );
+
+        const fileType =
+            attachment.file_type || "";
+
+        if (
+            fileType.startsWith("image/")
+        ) {
+
+            attachmentHtml = `
+                <div class="attachment">
+                    <a
+                        href="${fileUrl}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <img
+                            class="attachmentImage"
+                            src="${fileUrl}"
+                            alt="${fileName}"
+                            loading="lazy"
+                        >
+                    </a>
+                </div>
+            `;
+
+        } else {
+
+            attachmentHtml = `
+                <div class="attachment">
+                    <a
+                        class="fileLink"
+                        href="${fileUrl}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        📄
+                        <span class="fileName">
+                            ${fileName}
+                        </span>
+                    </a>
+                </div>
+            `;
+        }
+    }
+
     bubbleWrap.innerHTML = `
 
         <div class="sender">
@@ -1646,9 +1837,17 @@ function renderMessage(message) {
         </div>
 
         <div class="bubble">
-            ${escapeHtml(
-                message.message
-            )}
+
+            ${
+                attachment
+                ? ""
+                : escapeHtml(
+                    message.message
+                )
+            }
+
+            ${attachmentHtml}
+
         </div>
 
         <div class="messageMeta">
@@ -1712,7 +1911,236 @@ async function sendMessage() {
 
 
 /* ==================================================
-   REALTIME MESSAGE
+   FILE SELECTED
+================================================== */
+
+async function fileSelected(event) {
+
+    const file =
+        event.target.files[0];
+
+    if (!file) return;
+
+    event.target.value = "";
+
+    if (!currentUser || !currentRoom) {
+
+        alert(
+            "먼저 채팅방을 선택하세요."
+        );
+
+        return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+
+        alert(
+            "파일 크기는 최대 20MB까지 가능합니다."
+        );
+
+        return;
+    }
+
+    try {
+
+        showUploadStatus(
+            "📤 파일 업로드 중..."
+        );
+
+        /*
+         * 파일명에 들어갈 수 있는 위험한 문자를 제거
+         */
+
+        const safeName =
+            file.name
+                .replace(/[^\w가-힣.\-() ]/g, "_")
+                .slice(0, 100);
+
+        /*
+         * 같은 이름의 파일이 충돌하지 않도록
+         * 시간 + 랜덤 문자열 사용
+         */
+
+        const random =
+            Math.random()
+                .toString(36)
+                .slice(2, 10);
+
+        const path =
+            `${currentRoom.id}/${currentUser}/${Date.now()}_${random}_${safeName}`;
+
+        /*
+         * Supabase Storage 업로드
+         */
+
+        const {
+            error: uploadError
+        } = await supabaseClient
+            .storage
+            .from(STORAGE_BUCKET)
+            .upload(
+                path,
+                file,
+                {
+                    cacheControl: "3600",
+                    upsert: false,
+                    contentType: file.type || "application/octet-stream"
+                }
+            );
+
+        if (uploadError) {
+
+            console.error(
+                "Storage 업로드 오류:",
+                uploadError
+            );
+
+            throw uploadError;
+        }
+
+        /*
+         * Public URL 가져오기
+         */
+
+        const {
+            data: publicData
+        } = supabaseClient
+            .storage
+            .from(STORAGE_BUCKET)
+            .getPublicUrl(path);
+
+        const publicUrl =
+            publicData.publicUrl;
+
+        /*
+         * 파일을 표시할 메시지 생성
+         */
+
+        const {
+            data: message,
+            error: messageError
+        } = await supabaseClient
+            .from("messages")
+            .insert({
+                nickname: currentUser,
+                sender_username: currentUser,
+                message: `📎 ${file.name}`,
+                room_id: currentRoom.id
+            })
+            .select()
+            .single();
+
+        if (messageError) {
+
+            console.error(
+                "파일 메시지 생성 오류:",
+                messageError
+            );
+
+            /*
+             * 메시지 생성 실패 시 Storage 파일 삭제
+             */
+
+            await supabaseClient
+                .storage
+                .from(STORAGE_BUCKET)
+                .remove([path]);
+
+            throw messageError;
+        }
+
+        /*
+         * chat_files에 파일 정보 저장
+         */
+
+        const {
+            error: fileDbError
+        } = await supabaseClient
+            .from("chat_files")
+            .insert({
+                message_id: message.id,
+                file_url: publicUrl,
+                file_name: file.name,
+                file_type:
+                    file.type ||
+                    "application/octet-stream"
+            });
+
+        if (fileDbError) {
+
+            console.error(
+                "chat_files 저장 오류:",
+                fileDbError
+            );
+
+            /*
+             * DB 저장 실패 시 Storage 파일과 메시지 정리
+             */
+
+            await supabaseClient
+                .storage
+                .from(STORAGE_BUCKET)
+                .remove([path]);
+
+            await supabaseClient
+                .from("messages")
+                .delete()
+                .eq("id", message.id);
+
+            throw fileDbError;
+        }
+
+        showUploadStatus(
+            "✅ 업로드 완료!"
+        );
+
+        /*
+         * 파일 정보가 들어온 뒤 다시 렌더링
+         */
+
+        await loadMessages();
+
+        setTimeout(() => {
+            hideUploadStatus();
+        }, 1200);
+
+    } catch (error) {
+
+        console.error(error);
+
+        hideUploadStatus();
+
+        alert(
+            "파일 업로드에 실패했습니다.\n\n" +
+            (error.message || error)
+        );
+    }
+}
+
+
+/* ==================================================
+   UPLOAD STATUS
+================================================== */
+
+function showUploadStatus(text) {
+
+    uploadStatus.textContent =
+        text;
+
+    uploadStatus.style.display =
+        "block";
+}
+
+
+function hideUploadStatus() {
+
+    uploadStatus.style.display =
+        "none";
+}
+
+
+/* ==================================================
+   REALTIME MESSAGE + FILE
 ================================================== */
 
 function subscribeMessages() {
@@ -1735,6 +2163,11 @@ function subscribeMessages() {
                 "-" +
                 Date.now()
             )
+
+            /*
+             * 일반 메시지 실시간
+             */
+
             .on(
                 "postgres_changes",
                 {
@@ -1747,6 +2180,27 @@ function subscribeMessages() {
                 },
                 payload => {
 
+                    /*
+                     * 파일 메시지는 chat_files가
+                     * 저장된 후 전체를 다시 로딩한다.
+                     */
+
+                    if (
+                        String(
+                            payload.new.message || ""
+                        ).startsWith("📎 ")
+                    ) {
+
+                        setTimeout(
+                            () => {
+                                loadMessages();
+                            },
+                            300
+                        );
+
+                        return;
+                    }
+
                     renderMessage(
                         payload.new
                     );
@@ -1754,6 +2208,29 @@ function subscribeMessages() {
                     scrollMessages();
                 }
             )
+
+            /*
+             * 파일 DB 정보 실시간
+             */
+
+            .on(
+                "postgres_changes",
+                {
+                    event: "INSERT",
+                    schema: "public",
+                    table: "chat_files"
+                },
+                payload => {
+
+                    /*
+                     * 어느 방의 파일인지
+                     * message_id를 이용해서 확인
+                     */
+
+                    loadMessages();
+                }
+            )
+
             .subscribe();
 }
 
@@ -1941,10 +2418,6 @@ async function createGroupRoom() {
         Array.from(checked)
             .map(input => input.value);
 
-    /*
-       room_key는 매번 고유하게 생성
-    */
-
     const roomKey =
         "group_" +
         Date.now() +
@@ -1952,8 +2425,6 @@ async function createGroupRoom() {
         Math.random()
             .toString(36)
             .slice(2, 8);
-
-    /* 방 생성 */
 
     const {
         data: room,
@@ -1979,10 +2450,6 @@ async function createGroupRoom() {
         return;
     }
 
-    /*
-       만든 사람 + 선택한 친구
-    */
-
     const members = [
         currentUser,
         ...usernames
@@ -2006,10 +2473,6 @@ async function createGroupRoom() {
     if (memberError) {
 
         console.error(memberError);
-
-        /*
-           멤버 등록 실패 시 방 삭제
-        */
 
         await supabaseClient
             .from("chat_rooms")
@@ -2063,27 +2526,6 @@ function closeChat() {
 
         realtimeChannel = null;
     }
-}
-
-
-/* ==================================================
-   FILE
-================================================== */
-
-function fileSelected(event) {
-
-    const file =
-        event.target.files[0];
-
-    if (!file) return;
-
-    alert(
-        "파일 선택 완료: " +
-        file.name +
-        "\n\n실제 파일 업로드는 Supabase Storage 연결 후 사용할 수 있습니다."
-    );
-
-    event.target.value = "";
 }
 
 
@@ -2213,4 +2655,4 @@ document.addEventListener(
 </script>
 
 </body>
-                    </html>
+    </html>
